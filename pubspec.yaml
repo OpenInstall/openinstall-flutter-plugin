@@ -1,6 +1,6 @@
 name: openinstall_flutter_plugin
-description: A flutter plugin for openinstall.
-version: 0.0.1
+description: openinstall 的 flutter 插件，实现了 openinstall 提供的所有功能
+version: 1.0.0
 author: openinstall
 homepage: https://www.openinstall.io
 

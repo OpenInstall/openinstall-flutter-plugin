@@ -6,11 +6,12 @@ typedef Future<dynamic> EventHandler(Map<String, dynamic> data);
 
 class OpeninstallFlutterPlugin {
 
+  Future defaultHandler() async {}
+
   EventHandler _wakeupHandler;
   EventHandler _installHandler;
 
-  static const MethodChannel _channel = const MethodChannel(
-      'openinstall_flutter_plugin');
+  static const MethodChannel _channel = const MethodChannel('openinstall_flutter_plugin');
 
 
   void init(EventHandler wakeupHandler) {
@@ -23,12 +24,12 @@ class OpeninstallFlutterPlugin {
     switch (call.method) {
       case "onWakeupNotification":
         if (_wakeupHandler == null) {
-          return;
+          return defaultHandler();
         }
         return _wakeupHandler(call.arguments.cast<String, dynamic>());
       case "onInstallNotification":
         if (_installHandler == null) {
-          return;
+          return defaultHandler();
         }
         return _installHandler(call.arguments.cast<String, dynamic>());
       default:
