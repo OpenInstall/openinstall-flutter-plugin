@@ -1,5 +1,5 @@
 name: openinstall_flutter_plugin
-description: openinstall 的 flutter 插件，实现了 openinstall 提供的所有功能
+description: openinstall_flutter_plugin is a Flutter plugin based on openinstall, which provides you with APP promotion technology services.
 version: 1.0.0
 author: openinstall
 homepage: https://www.openinstall.io

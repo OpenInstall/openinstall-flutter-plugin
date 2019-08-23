@@ -23,4 +23,23 @@
     return YES;
 }
 
+//适用目前所有iOS版本
+-(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
+    //判断是否通过OpenInstall URL Scheme 唤起App
+    if([OpeninstallFlutterPlugin handLinkURL:url]){//必写
+        return YES;
+    }
+    //其他第三方回调；
+    return YES;
+}
+//iOS9以上，会优先走这个方法
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(nonnull NSDictionary *)options{
+    //判断是否通过OpenInstall URL Scheme 唤起App
+    if  ([OpeninstallFlutterPlugin handLinkURL:url]){//必写
+        return YES;
+    }
+    //其他第三方回调；
+    return YES;
+}
+
 @end
