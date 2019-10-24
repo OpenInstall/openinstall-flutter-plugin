@@ -1,6 +1,6 @@
 #import "OpeninstallFlutterPlugin.h"
 
-#import <OpenInstallSDK.h>
+#import "OpenInstallSDK.h"
 
 typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
     OpenInstallSDKMethodInit,
