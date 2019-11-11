@@ -54,14 +54,6 @@ class _MyAppState extends State<MyApp> {
                 },
                 child: Text('registerInstall', style: TextStyle(fontSize: 20)),
               ),
-//              const SizedBox(height: 30),
-//              RaisedButton(
-//                onPressed: () {
-//                  _openinstallFlutterPlugin.wakeup(wakeupHandler);
-//                },
-//                child: const Text('registerWakeup',
-//                    style: TextStyle(fontSize: 20)),
-//              ),
               const SizedBox(height: 30),
               RaisedButton(
                 onPressed: () {

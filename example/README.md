@@ -1,16 +1,104 @@
 # openinstall_flutter_plugin_example
 
-Demonstrates how to use the openinstall_flutter_plugin plugin.
+``` dart
+import 'dart:async';
 
-## Getting Started
+import 'package:flutter/material.dart';
+import 'package:openinstall_flutter_plugin/openinstall_flutter_plugin.dart';
 
-This project is a starting point for a Flutter application.
+void main() => runApp(MyApp());
 
-A few resources to get you started if this is your first Flutter project:
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
+class _MyAppState extends State<MyApp> {
+  String log;
+  OpeninstallFlutterPlugin _openinstallFlutterPlugin;
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
+    _openinstallFlutterPlugin.init(wakeupHandler);
+
+    setState(() {
+      log = "";
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('openinstall plugin demo'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(log, style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 30),
+              RaisedButton(
+                onPressed: () {
+                  _openinstallFlutterPlugin.install(installHandler);
+                },
+                child: Text('registerInstall', style: TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(height: 30),
+              RaisedButton(
+                onPressed: () {
+                  _openinstallFlutterPlugin.reportRegister();
+                },
+                child: const Text('reportRegister',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(height: 30),
+              RaisedButton(
+                onPressed: () {
+                  _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
+                },
+                child: const Text('reportEffectPoint',
+                    style: TextStyle(fontSize: 20)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future installHandler(Map<String, dynamic> data) async {
+    setState(() {
+      log = "install result : channel=" +
+          data['channelCode'] +
+          ", data=" +
+          data['bindData'].toString() +
+          "\n";
+    });
+  }
+
+  Future wakeupHandler(Map<String, dynamic> data) async {
+    setState(() {
+      log = "wakeup result : channel=" +
+          data['channelCode'] +
+          ", data=" +
+          data['bindData'].toString() +
+          "\n";
+    });
+  }
+}
+
+```
