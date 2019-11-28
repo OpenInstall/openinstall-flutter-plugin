@@ -31,6 +31,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     self = [super init];
     if (self) {
         [self initData];
+        [OpenInstallSDK initWithDelegate:self];
     }
     return self;
 }
@@ -50,8 +51,6 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
         switch (methodType.intValue) {
             case OpenInstallSDKMethodInit:
             {
-                __weak typeof(self) weakSelf = self;
-                [OpenInstallSDK initWithDelegate:weakSelf];
                 break;
             }
             case OpenInstallSDKMethodGetInstallParams:
