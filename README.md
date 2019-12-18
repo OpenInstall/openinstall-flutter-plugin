@@ -1,6 +1,6 @@
 # openinstall flutter plugin
 
-## 配置
+## 一、配置
 请先从 [openinstall平台](https://developer.openinstall.io/) 申请开发者账号并创建应用，获取 `AppKey` 和 `scheme`
 
 ### Android 平台配置
@@ -131,7 +131,7 @@ android: {
 }
 ```
 
-## 使用
+## 二、使用
 
 #### 初始化
 `init(EventHandler wakeupHandler)`
@@ -189,3 +189,7 @@ _openinstallFlutterPlugin.reportRegister();
 ``` dart
 _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 ```
+
+## 三、导出apk/api包并上传
+- 代码集成完毕后，需要导出安装包上传openinstall后台，openinstall会自动完成所有的应用配置工作。  
+- 上传完成后即可开始在线模拟测试，体验完整的App安装/拉起流程；待测试无误后，再完善下载配置信息。
