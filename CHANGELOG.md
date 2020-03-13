@@ -1,3 +1,6 @@
+## 1.2.1
+修改 OpeninstallFlutterPlugin 为单例
+
 ## 1.2.0
 更新 Android SDK 到 2.3.1
 

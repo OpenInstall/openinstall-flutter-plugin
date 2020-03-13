@@ -6,6 +6,11 @@ typedef Future<dynamic> EventHandler(Map<String, dynamic> data);
 
 class OpeninstallFlutterPlugin {
 
+  // 单例
+  static final OpeninstallFlutterPlugin _instance = new OpeninstallFlutterPlugin._internal();
+  factory OpeninstallFlutterPlugin() => _instance;
+  OpeninstallFlutterPlugin._internal();
+
   Future defaultHandler() async {}
 
   EventHandler _wakeupHandler;

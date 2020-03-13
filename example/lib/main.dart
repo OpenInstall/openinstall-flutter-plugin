@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () {
                   _openinstallFlutterPlugin.install(installHandler);
                 },
-                child: Text('registerInstall', style: TextStyle(fontSize: 20)),
+                child: Text('getInstall', style: TextStyle(fontSize: 20)),
               ),
               const SizedBox(height: 30),
               RaisedButton(
