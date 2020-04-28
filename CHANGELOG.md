@@ -1,3 +1,14 @@
+## 1.2.2
+更新Android sdk和iOS sdk
+
+Android 2.3.2 更新内容
+- 优化Google Play数据还原
+- 优化注册统计
+
+iOS 2.3.1 更新内容
+- 优化了SDK逻辑
+- 优化了注册统计上报策略
+
 ## 1.2.1
 修改 OpeninstallFlutterPlugin 为单例
 
