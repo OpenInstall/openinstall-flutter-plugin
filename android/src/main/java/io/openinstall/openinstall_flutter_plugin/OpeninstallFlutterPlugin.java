@@ -2,6 +2,7 @@ package io.openinstall.openinstall_flutter_plugin;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.fm.openinstall.OpenInstall;
 import com.fm.openinstall.listener.AppInstallAdapter;
@@ -23,7 +24,10 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class OpeninstallFlutterPlugin implements MethodCallHandler {
 
-    private static MethodChannel channel = null;
+    private static final String TAG = "OpeninstallPlugin";
+
+    private static MethodChannel _channel = null;
+    private static Registrar _registrar = null;
     private static AppData dataHolder = null;
     private static boolean LISTEN = false;
 
@@ -31,25 +35,18 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
      * Plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        channel = new MethodChannel(registrar.messenger(), "openinstall_flutter_plugin");
-        channel.setMethodCallHandler(new OpeninstallFlutterPlugin());
+        _registrar = registrar;
+        _channel = new MethodChannel(registrar.messenger(), "openinstall_flutter_plugin");
+        _channel.setMethodCallHandler(new OpeninstallFlutterPlugin());
 
         registrar.addNewIntentListener(new PluginRegistry.NewIntentListener() {
-            @java.lang.Override
+            @Override
             public boolean onNewIntent(android.content.Intent intent) {
                 OpenInstall.getWakeUp(intent, wakeUpAdapter);
                 return true;
             }
         });
 
-        Context context = registrar.context();
-        if (context != null) {
-            OpenInstall.init(context);
-        }
-        Activity activity = registrar.activity();
-        if (activity != null) {
-            OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
-        }
     }
 
     @Override
@@ -59,7 +56,7 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
             OpenInstall.getInstall(new AppInstallAdapter() {
                 @Override
                 public void onInstall(AppData appData) {
-                    channel.invokeMethod("onInstallNotification", data2Map(appData));
+                    _channel.invokeMethod("onInstallNotification", data2Map(appData));
                 }
             }, seconds == null ? 0 : seconds);
             result.success("getInstall success, wait callback");
@@ -74,20 +71,59 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         } else if (call.method.equals("registerWakeup")) {
             LISTEN = true;
             if (dataHolder != null) {
-                channel.invokeMethod("onWakeupNotification", data2Map(dataHolder));
+                _channel.invokeMethod("onWakeupNotification", data2Map(dataHolder));
                 dataHolder = null;
             }
             result.success("registerWakeup success");
+        } else if (call.method.equals("init")) {
+            init();
+        } else if (call.method.equals("initWithPermission")) {
+            Activity activity = _registrar.activity();
+            if (activity != null) {
+                initWithPermission(activity);
+            } else {
+                init();
+            }
         } else {
             result.notImplemented();
         }
+    }
+
+    private void init() {
+        Context context = _registrar.context();
+        if (context != null) {
+            OpenInstall.init(context);
+            Activity activity = _registrar.activity();
+            if (activity != null) {
+                OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+            }
+        } else {
+            Log.d(TAG, "Context is null, can not init OpenInstall");
+        }
+    }
+
+    private void initWithPermission(final Activity activity) {
+        if (activity == null) return;
+        _registrar.addRequestPermissionsResultListener(new PluginRegistry.RequestPermissionsResultListener() {
+            @Override
+            public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+                OpenInstall.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                return false;
+            }
+        });
+        OpenInstall.initWithPermission(activity, new Runnable() {
+            @Override
+            public void run() {
+                OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+            }
+        });
     }
 
     private static AppWakeUpAdapter wakeUpAdapter = new AppWakeUpAdapter() {
         @Override
         public void onWakeUp(AppData appData) {
             if (LISTEN) {
-                channel.invokeMethod("onWakeupNotification", data2Map(appData));
+                _channel.invokeMethod("onWakeupNotification", data2Map(appData));
                 dataHolder = null;
             } else {
                 dataHolder = appData;

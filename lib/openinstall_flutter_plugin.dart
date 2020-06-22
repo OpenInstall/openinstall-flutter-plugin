@@ -1,14 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
 typedef Future<dynamic> EventHandler(Map<String, dynamic> data);
 
 class OpeninstallFlutterPlugin {
-
   // 单例
-  static final OpeninstallFlutterPlugin _instance = new OpeninstallFlutterPlugin._internal();
+  static final OpeninstallFlutterPlugin _instance =
+      new OpeninstallFlutterPlugin._internal();
+
   factory OpeninstallFlutterPlugin() => _instance;
+
   OpeninstallFlutterPlugin._internal();
 
   Future defaultHandler() async {}
@@ -16,10 +19,17 @@ class OpeninstallFlutterPlugin {
   EventHandler _wakeupHandler;
   EventHandler _installHandler;
 
-  static const MethodChannel _channel = const MethodChannel('openinstall_flutter_plugin');
+  static const MethodChannel _channel =
+      const MethodChannel('openinstall_flutter_plugin');
 
-
-  void init(EventHandler wakeupHandler) {
+  void init(EventHandler wakeupHandler, [bool permission = false]) {
+    if (Platform.isAndroid) {
+      if (permission) {
+        _channel.invokeMethod("initWithPermission");
+      } else {
+        _channel.invokeMethod("init");
+      }
+    }
     _wakeupHandler = wakeupHandler;
     _channel.invokeMethod("registerWakeup");
     _channel.setMethodCallHandler(_handleMethod);
@@ -59,6 +69,4 @@ class OpeninstallFlutterPlugin {
     args["pointValue"] = pointValue;
     _channel.invokeMethod('reportEffectPoint', args);
   }
-
-
 }

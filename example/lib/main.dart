@@ -28,7 +28,8 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
-    _openinstallFlutterPlugin.init(wakeupHandler);
+//    _openinstallFlutterPlugin.init(wakeupHandler);
+    _openinstallFlutterPlugin.init(wakeupHandler, true);
 
     setState(() {
       log = "";
