@@ -11,6 +11,8 @@ import com.fm.openinstall.model.AppData;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -30,6 +32,7 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
     private static Registrar _registrar = null;
     private static AppData dataHolder = null;
     private static boolean LISTEN = false;
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
 
     /**
      * Plugin registration.
@@ -51,8 +54,10 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
 
     @Override
     public void onMethodCall(MethodCall call, Result result) {
+        Log.d(TAG, "call method " + call.method);
         if (call.method.equals("getInstall")) {
             Integer seconds = call.argument("seconds");
+            waitInit();
             OpenInstall.getInstall(new AppInstallAdapter() {
                 @Override
                 public void onInstall(AppData appData) {
@@ -61,11 +66,13 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
             }, seconds == null ? 0 : seconds);
             result.success("getInstall success, wait callback");
         } else if (call.method.equals("reportRegister")) {
+            waitInit();
             OpenInstall.reportRegister();
             result.success("reportRegister success");
         } else if (call.method.equals("reportEffectPoint")) {
             String pointId = call.argument("pointId");
             Integer pointValue = call.argument("pointValue");
+            waitInit();
             OpenInstall.reportEffectPoint(pointId, pointValue == null ? 0 : pointValue);
             result.success("reportEffectPoint success");
         } else if (call.method.equals("registerWakeup")) {
@@ -93,6 +100,7 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         Context context = _registrar.context();
         if (context != null) {
             OpenInstall.init(context);
+            countDownLatch.countDown();
             Activity activity = _registrar.activity();
             if (activity != null) {
                 OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
@@ -114,9 +122,11 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         OpenInstall.initWithPermission(activity, new Runnable() {
             @Override
             public void run() {
+                countDownLatch.countDown();
                 OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
             }
         });
+
     }
 
     private static AppWakeUpAdapter wakeUpAdapter = new AppWakeUpAdapter() {
@@ -136,6 +146,14 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         result.put("channelCode", data.getChannel());
         result.put("bindData", data.getData());
         return result;
+    }
+
+    private void waitInit() {
+        try {
+            countDownLatch.await(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
