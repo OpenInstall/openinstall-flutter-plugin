@@ -45,7 +45,7 @@ android: {
 
 * 开启Associated Domains服务
 
-对于iOS，为确保能正常跳转，AppID必须开启Associated Domains功能，请到[苹果开发者网站](https://developer.apple.com/ "苹果开发者网站")，选择Certificate, Identifiers & Profiles，选择相应的AppID，开启Associated Domains。注意：当AppID重新编辑过之后，需要更新相应的mobileprovision证书。(图文配置步骤请看[iOS集成指南](https://www.openinstall.io/doc/ios_sdk.html "iOS集成指南"))。
+对于iOS，为确保能正常跳转，AppID必须开启Associated Domains功能，请到[苹果开发者网站](https://developer.apple.com/ "苹果开发者网站")，选择Certificate, Identifiers & Profiles，选择相应的AppID，开启Associated Domains。注意：当AppID重新编辑过之后，需要更新相应的mobileprovision证书。(图文配置步骤请看[Flutter接入指南](https://www.openinstall.io/doc/flutter_sdk.html "iOS集成指南"))。
 
 * 配置universal links关联域名（iOS 9以后推荐使用）
 
@@ -79,16 +79,17 @@ android: {
 //添加此方法以获取拉起参数
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler{
     //判断是否通过OpenInstall Universal Link 唤起App
-    if ([OpeninstallFlutterPlugin continueUserActivity:userActivity]){//如果使用了Universal link ，此方法必写
-        return YES;
-    }
-    //其他第三方回调；
+    [OpeninstallFlutterPlugin continueUserActivity:userActivity];
+
+    //其他第三方回调:
     return YES;
 }
 ```
 
+- **openinstall完全兼容微信openSDK1.8.6以上版本的通用链接跳转功能，详情请看[iOS常见问题](https://www.openinstall.io/doc/ios_sdk_faq.html)**
+
 ##### scheme 配置
-在 `ios/Runner/Info.plist` 文件中，在 `CFBundleURLTypes` 数组中添加应用对应的 scheme，或者在工程“TARGETS -> Info -> URL Types” 里快速添加，图文配置请看 [iOS集成指南](https://www.openinstall.io/doc/ios_sdk.html "iOS集成指南")
+在 `ios/Runner/Info.plist` 文件中，在 `CFBundleURLTypes` 数组中添加应用对应的 scheme，或者在工程“TARGETS -> Info -> URL Types” 里快速添加，图文配置请看 [Flutter接入指南](https://www.openinstall.io/doc/flutter_sdk.html "iOS集成指南")
 ``` xml
 <key>CFBundleURLTypes</key>
 <array>
@@ -114,19 +115,17 @@ android: {
 //适用目前所有iOS版本
 -(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
     //判断是否通过OpenInstall URL Scheme 唤起App
-    if([OpeninstallFlutterPlugin handLinkURL:url]){//必写
-        return YES;
-    }
-    //其他第三方回调；
+    [OpeninstallFlutterPlugin handLinkURL:url];
+
+    //其他第三方回调:
     return YES;
 }
 //iOS9以上，会优先走这个方法
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(nonnull NSDictionary *)options{
     //判断是否通过OpenInstall URL Scheme 唤起App
-    if  ([OpeninstallFlutterPlugin handLinkURL:url]){//必写
-        return YES;
-    }
-    //其他第三方回调；
+    [OpeninstallFlutterPlugin handLinkURL:url];
+
+    //其他第三方回调:
     return YES;
 }
 ```
