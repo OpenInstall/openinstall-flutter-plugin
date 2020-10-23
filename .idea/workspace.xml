@@ -6,18 +6,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6da4f98-d808-4e92-8d93-62d3e41e02b5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/libs/OpenInstall_v2.4.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/android/libs/OpenInstall_v2.4.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="2393963f9905" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="8AWX10HY2" />
   <component name="FindInProjectRecents">
     <findStrings>
       <find>ActivityLife</find>
@@ -32,10 +31,11 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/android/build.gradle" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/example/android" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RecentsManager">
@@ -56,5 +56,31 @@
       <updated>1565851133106</updated>
     </task>
     <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="844" y="247" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1603450580302">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="844" y="247" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.0.2048.1112@0.0.2048.1112" timestamp="1603450580302" />
+    <state x="805" y="311" key="FileChooserDialogImpl" timestamp="1603450644466">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1603450644466" />
+    <state width="1002" height="416" key="GridCell.Tab.0.bottom" timestamp="1603451084453">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="1002" height="416" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084453" />
+    <state width="1002" height="416" key="GridCell.Tab.0.center" timestamp="1603451084453">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="1002" height="416" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084453" />
+    <state width="1002" height="416" key="GridCell.Tab.0.left" timestamp="1603451084452">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="1002" height="416" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084452" />
+    <state width="1002" height="416" key="GridCell.Tab.0.right" timestamp="1603451084453">
+      <screen x="0" y="0" width="2048" height="1112" />
+    </state>
+    <state width="1002" height="416" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084453" />
   </component>
 </project>

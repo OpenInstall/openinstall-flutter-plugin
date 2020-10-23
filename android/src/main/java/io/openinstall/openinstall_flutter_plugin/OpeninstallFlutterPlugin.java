@@ -2,6 +2,7 @@ package io.openinstall.openinstall_flutter_plugin;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.fm.openinstall.OpenInstall;
@@ -30,9 +31,8 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
 
     private static MethodChannel _channel = null;
     private static Registrar _registrar = null;
-    private static AppData dataHolder = null;
-    private static boolean LISTEN = false;
-    private CountDownLatch countDownLatch = new CountDownLatch(1);
+    private static Intent intentHolder = null;
+    private static volatile boolean INIT = false;
 
     /**
      * Plugin registration.
@@ -45,7 +45,11 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         registrar.addNewIntentListener(new PluginRegistry.NewIntentListener() {
             @Override
             public boolean onNewIntent(android.content.Intent intent) {
-                OpenInstall.getWakeUp(intent, wakeUpAdapter);
+                if(INIT) {
+                    OpenInstall.getWakeUp(intent, wakeUpAdapter);
+                }else{
+                    intentHolder = intent;
+                }
                 return true;
             }
         });
@@ -57,7 +61,6 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         Log.d(TAG, "call method " + call.method);
         if (call.method.equals("getInstall")) {
             Integer seconds = call.argument("seconds");
-            waitInit();
             OpenInstall.getInstall(new AppInstallAdapter() {
                 @Override
                 public void onInstall(AppData appData) {
@@ -66,22 +69,15 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
             }, seconds == null ? 0 : seconds);
             result.success("getInstall success, wait callback");
         } else if (call.method.equals("reportRegister")) {
-            waitInit();
             OpenInstall.reportRegister();
             result.success("reportRegister success");
         } else if (call.method.equals("reportEffectPoint")) {
             String pointId = call.argument("pointId");
             Integer pointValue = call.argument("pointValue");
-            waitInit();
             OpenInstall.reportEffectPoint(pointId, pointValue == null ? 0 : pointValue);
             result.success("reportEffectPoint success");
         } else if (call.method.equals("registerWakeup")) {
-            LISTEN = true;
-            if (dataHolder != null) {
-                _channel.invokeMethod("onWakeupNotification", data2Map(dataHolder));
-                dataHolder = null;
-            }
-            result.success("registerWakeup success");
+            result.success("registerWakeup Deprecated");
         } else if (call.method.equals("init")) {
             init();
         } else if (call.method.equals("initWithPermission")) {
@@ -89,6 +85,7 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
             if (activity != null) {
                 initWithPermission(activity);
             } else {
+                Log.d(TAG, "Activity is null, can not initWithPermission");
                 init();
             }
         } else {
@@ -100,10 +97,14 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         Context context = _registrar.context();
         if (context != null) {
             OpenInstall.init(context);
-            countDownLatch.countDown();
-            Activity activity = _registrar.activity();
-            if (activity != null) {
-                OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+            INIT = true;
+            if(intentHolder == null) {
+                Activity activity = _registrar.activity();
+                if (activity != null) {
+                    OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+                }
+            }else{
+                OpenInstall.getWakeUp(intentHolder, wakeUpAdapter);
             }
         } else {
             Log.d(TAG, "Context is null, can not init OpenInstall");
@@ -111,7 +112,9 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
     }
 
     private void initWithPermission(final Activity activity) {
-        if (activity == null) return;
+        if (activity == null) {
+            return;
+        }
         _registrar.addRequestPermissionsResultListener(new PluginRegistry.RequestPermissionsResultListener() {
             @Override
             public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -122,8 +125,12 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         OpenInstall.initWithPermission(activity, new Runnable() {
             @Override
             public void run() {
-                countDownLatch.countDown();
-                OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+                INIT = true;
+                if(intentHolder == null) {
+                    OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+                }else{
+                    OpenInstall.getWakeUp(intentHolder, wakeUpAdapter);
+                }
             }
         });
 
@@ -132,12 +139,8 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
     private static AppWakeUpAdapter wakeUpAdapter = new AppWakeUpAdapter() {
         @Override
         public void onWakeUp(AppData appData) {
-            if (LISTEN) {
-                _channel.invokeMethod("onWakeupNotification", data2Map(appData));
-                dataHolder = null;
-            } else {
-                dataHolder = appData;
-            }
+            _channel.invokeMethod("onWakeupNotification", data2Map(appData));
+            intentHolder = null;
         }
     };
 
@@ -146,14 +149,6 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         result.put("channelCode", data.getChannel());
         result.put("bindData", data.getData());
         return result;
-    }
-
-    private void waitInit() {
-        try {
-            countDownLatch.await(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -23,16 +23,18 @@ class OpeninstallFlutterPlugin {
       const MethodChannel('openinstall_flutter_plugin');
 
   void init(EventHandler wakeupHandler, [bool permission = false]) {
+    _wakeupHandler = wakeupHandler;
+    _channel.invokeMethod("registerWakeup");
+    _channel.setMethodCallHandler(_handleMethod);
+
     if (Platform.isAndroid) {
+      // registerWakeup 将在初始化后自动调用
       if (permission) {
         _channel.invokeMethod("initWithPermission");
       } else {
         _channel.invokeMethod("init");
       }
     }
-    _wakeupHandler = wakeupHandler;
-    _channel.invokeMethod("registerWakeup");
-    _channel.setMethodCallHandler(_handleMethod);
   }
 
   Future<Null> _handleMethod(MethodCall call) async {
