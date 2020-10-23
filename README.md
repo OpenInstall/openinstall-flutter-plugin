@@ -192,3 +192,33 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 ## 三、导出apk/api包并上传
 - 代码集成完毕后，需要导出安装包上传openinstall后台，openinstall会自动完成所有的应用配置工作。  
 - 上传完成后即可开始在线模拟测试，体验完整的App安装/拉起流程；待测试无误后，再完善下载配置信息。
+
+
+---
+
+## 广告接入补充文档
+
+### Android平台
+
+（1）声明权限  
+在 `AndroidMainfest.xml` 配置文件中添加了需要申请的权限 `<uses-permission android:name="android.permission.READ_PHONE_STATE"/>`
+
+（2）可使用插件提供的 api 进行权限申请，调用初始化 api，第二个参数 `permission=true` 表示插件进行权限申请
+``` dart
+_openinstallFlutterPlugin.init(wakeupHandler, true);
+```
+
+（3）也可在 `Flutter` 自行进行权限申请，只需要确保在初始化之前申请权限，例如
+``` dart
+// 使用 permission_handler
+if (await Permission.phone.request().isGranted) {
+  // 获取到了权限
+}
+_openinstallFlutterPlugin.init(wakeupHandler);
+```
+
+### iOS平台
+
+将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件
+
+备注：2021年初苹果公司将正式启用idfa隐私政策，届时需要对插件进行更新，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
