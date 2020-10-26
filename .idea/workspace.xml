@@ -7,16 +7,13 @@
   <component name="ChangeListManager">
     <list default="true" id="e6da4f98-d808-4e92-8d93-62d3e41e02b5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="8AWX10HY2" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_3_API_29" />
   <component name="FindInProjectRecents">
     <findStrings>
       <find>ActivityLife</find>
