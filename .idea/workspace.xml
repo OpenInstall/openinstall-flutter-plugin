@@ -32,6 +32,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
@@ -66,21 +67,21 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1603450644466" />
-    <state width="1002" height="416" key="GridCell.Tab.0.bottom" timestamp="1603451084453">
+    <state width="1002" height="294" key="GridCell.Tab.0.bottom" timestamp="1603452592248">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="1002" height="416" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084453" />
-    <state width="1002" height="416" key="GridCell.Tab.0.center" timestamp="1603451084453">
+    <state width="1002" height="294" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1603452592248" />
+    <state width="1002" height="294" key="GridCell.Tab.0.center" timestamp="1603452592247">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="1002" height="416" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084453" />
-    <state width="1002" height="416" key="GridCell.Tab.0.left" timestamp="1603451084452">
+    <state width="1002" height="294" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1603452592247" />
+    <state width="1002" height="294" key="GridCell.Tab.0.left" timestamp="1603452592247">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="1002" height="416" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084452" />
-    <state width="1002" height="416" key="GridCell.Tab.0.right" timestamp="1603451084453">
+    <state width="1002" height="294" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1603452592247" />
+    <state width="1002" height="294" key="GridCell.Tab.0.right" timestamp="1603452592247">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="1002" height="416" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1603451084453" />
+    <state width="1002" height="294" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1603452592247" />
   </component>
 </project>
