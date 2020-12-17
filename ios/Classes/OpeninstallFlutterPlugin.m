@@ -10,11 +10,10 @@ typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
 };
 
 @interface OpeninstallFlutterPlugin () <OpenInstallDelegate>
-
 @property (strong, nonatomic, readonly) NSDictionary *methodDict;
-
 @property (strong, nonatomic) FlutterMethodChannel * flutterMethodChannel;
-
+@property (assign, nonatomic) BOOL isOnWakeup;
+@property (copy, nonatomic)NSDictionary *cacheDic;
 @end
 
 static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
@@ -23,6 +22,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel * channel = [FlutterMethodChannel methodChannelWithName:@"openinstall_flutter_plugin" binaryMessenger:[registrar messenger]];
     OpeninstallFlutterPlugin* instance = [[OpeninstallFlutterPlugin alloc] init];
+    [registrar addApplicationDelegate:instance];
     instance.flutterMethodChannel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -31,7 +31,6 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     self = [super init];
     if (self) {
         [self initData];
-        [OpenInstallSDK initWithDelegate:self];
     }
     return self;
 }
@@ -51,6 +50,17 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
         switch (methodType.intValue) {
             case OpenInstallSDKMethodInit:
             {
+                NSDictionary *dict;
+                @synchronized(self){
+                    if (self.cacheDic) {
+                        dict = [self.cacheDic copy];
+                    }
+                }
+                self.isOnWakeup = YES;
+                if (dict.count != 0) {
+                    [self.flutterMethodChannel invokeMethod:@"onWakeupNotification" arguments:dict];
+                    self.cacheDic = nil;
+                }
                 break;
             }
             case OpenInstallSDKMethodGetInstallParams:
@@ -94,7 +104,14 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 
 - (void)wakeUpParamsResponse:(OpeninstallData *) appData {
     NSDictionary *args = [self convertInstallArguments:appData];
-    [self.flutterMethodChannel invokeMethod:@"onWakeupNotification" arguments:args];
+    if (self.isOnWakeup) {
+        [self.flutterMethodChannel invokeMethod:@"onWakeupNotification" arguments:args];
+    }else{
+        @synchronized(self){
+            self.cacheDic = [[NSDictionary alloc]init];
+            self.cacheDic = args;
+        }
+    }
 }
 
 - (NSDictionary *)convertInstallArguments:(OpeninstallData *) appData {
@@ -141,6 +158,32 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 
 + (BOOL)continueUserActivity:(NSUserActivity *) userActivity {
     return [OpenInstallSDK continueUserActivity:userActivity];
+}
+
+#pragma mark - Application Delegate
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [OpenInstallSDK initWithDelegate:self];
+    return YES;
+}
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    [OpeninstallFlutterPlugin handLinkURL:url];
+    return YES;
+}
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    [OpeninstallFlutterPlugin handLinkURL:url];
+    return YES;
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
+#if defined(__IPHONE_12_0)
+    restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring> > * _Nullable restorableObjects))restorationHandler
+#else
+    restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+#endif
+{
+    [OpeninstallFlutterPlugin continueUserActivity:userActivity];
+    return YES;
 }
 
 @end

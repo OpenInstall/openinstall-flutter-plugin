@@ -67,24 +67,7 @@ android: {
 </plist>
 ```
 
-* 在 `ios/Runner/AppDelegate.m` 中添加通用链接（Universal Link）回调方法，委托插件来处理：
-
-在头部引入
-``` objc
-#import <openinstall_flutter_plugin/OpeninstallFlutterPlugin.h>
-
-```
-添加如下方法
-``` objc
-//添加此方法以获取拉起参数
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler{
-    //判断是否通过OpenInstall Universal Link 唤起App
-    [OpeninstallFlutterPlugin continueUserActivity:userActivity];
-
-    //其他第三方回调:
-    return YES;
-}
-```
+**注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**
 
 - **openinstall完全兼容微信openSDK1.8.6以上版本的通用链接跳转功能，详情请看[iOS常见问题](https://www.openinstall.io/doc/ios_sdk_faq.html)**
 
@@ -106,29 +89,7 @@ android: {
 </array>
 ```
 
-在 `ios/Runner/AppDelegate.m` 中头部引入：
-``` objc
-#import <openinstall_flutter_plugin/OpeninstallFlutterPlugin.h>
-```
-在 `ios/Runner/AppDelegate.m` 中添加方法：
-``` objc
-//适用目前所有iOS版本
--(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
-    //判断是否通过OpenInstall URL Scheme 唤起App
-    [OpeninstallFlutterPlugin handLinkURL:url];
-
-    //其他第三方回调:
-    return YES;
-}
-//iOS9以上，会优先走这个方法
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(nonnull NSDictionary *)options{
-    //判断是否通过OpenInstall URL Scheme 唤起App
-    [OpeninstallFlutterPlugin handLinkURL:url];
-
-    //其他第三方回调:
-    return YES;
-}
-```
+**注意：插件版本>=1.3.1开始，scheme原生代码已在插件内部完成**
 
 ## 二、使用
 
@@ -219,6 +180,6 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 
 ### iOS平台
 
-将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件
+将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件，注意：2021年初，苹果将正式启用新的隐私政策，届时，请开启`example/ad-track/OpeninstallFlutterPlugin.m`文件中的相关方法（打开注释）
 
 备注：2021年初苹果公司将正式启用idfa隐私政策，届时需要对插件进行更新，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
