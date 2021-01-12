@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.fm.openinstall.Configuration;
 import com.fm.openinstall.OpenInstall;
 import com.fm.openinstall.listener.AppInstallAdapter;
 import com.fm.openinstall.listener.AppWakeUpAdapter;
@@ -12,8 +13,6 @@ import com.fm.openinstall.model.AppData;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -33,6 +32,7 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
     private static Registrar _registrar = null;
     private static Intent intentHolder = null;
     private static volatile boolean INIT = false;
+    private static Configuration configuration = null;
 
     /**
      * Plugin registration.
@@ -45,12 +45,12 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
         registrar.addNewIntentListener(new PluginRegistry.NewIntentListener() {
             @Override
             public boolean onNewIntent(android.content.Intent intent) {
-                if(INIT) {
+                if (INIT) {
                     OpenInstall.getWakeUp(intent, wakeUpAdapter);
-                }else{
+                } else {
                     intentHolder = intent;
                 }
-                return true;
+                return false;
             }
         });
 
@@ -77,33 +77,53 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
             OpenInstall.reportEffectPoint(pointId, pointValue == null ? 0 : pointValue);
             result.success("reportEffectPoint success");
         } else if (call.method.equals("registerWakeup")) {
+            Log.d(TAG, "Android registerWakeup Deprecated");
             result.success("registerWakeup Deprecated");
         } else if (call.method.equals("init")) {
             init();
+            result.success("init success");
         } else if (call.method.equals("initWithPermission")) {
             Activity activity = _registrar.activity();
             if (activity != null) {
                 initWithPermission(activity);
+                result.success("initWithPermission success, wait request permission");
             } else {
-                Log.d(TAG, "Activity is null, can not initWithPermission");
+                Log.d(TAG, "Activity is null, can't call initWithPermission");
                 init();
+                result.success("init success");
             }
+        } else if (call.method.equals("config")) {
+            String oaid = call.argument("oaid");
+            String gaid = call.argument("gaid");
+            Boolean adEnabled = call.argument("adEnabled");
+            config(adEnabled == null ? false : adEnabled, oaid, gaid);
+            result.success("config success");
         } else {
             result.notImplemented();
         }
     }
 
+    private void config(boolean adEnabled, String oaid, String gaid) {
+        Configuration.Builder builder = new Configuration.Builder();
+        builder.adEnabled(adEnabled);
+        builder.oaid(oaid);
+        builder.gaid(gaid);
+        Log.d(TAG, String.format("config adEnabled=%b, oaid=%s, gaid=%s",
+                adEnabled, oaid == null ? "NULL" : oaid, gaid == null ? "NULL" : gaid));
+        configuration = builder.build();
+    }
+
     private void init() {
         Context context = _registrar.context();
         if (context != null) {
-            OpenInstall.init(context);
+            OpenInstall.init(context, configuration);
             INIT = true;
-            if(intentHolder == null) {
+            if (intentHolder == null) {
                 Activity activity = _registrar.activity();
                 if (activity != null) {
                     OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
                 }
-            }else{
+            } else {
                 OpenInstall.getWakeUp(intentHolder, wakeUpAdapter);
             }
         } else {
@@ -122,13 +142,13 @@ public class OpeninstallFlutterPlugin implements MethodCallHandler {
                 return false;
             }
         });
-        OpenInstall.initWithPermission(activity, new Runnable() {
+        OpenInstall.initWithPermission(activity, configuration, new Runnable() {
             @Override
             public void run() {
                 INIT = true;
-                if(intentHolder == null) {
+                if (intentHolder == null) {
                     OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
-                }else{
+                } else {
                     OpenInstall.getWakeUp(intentHolder, wakeUpAdapter);
                 }
             }

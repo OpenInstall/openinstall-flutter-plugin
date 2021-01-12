@@ -160,16 +160,32 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 ## 广告接入补充文档
 
 ### Android平台
-
-（1）声明权限  
+#### 广告平台配置
+针对广告平台接入，新增配置接口，在调用 `init` 之前调用。参考 [广告平台对接Android集成指引](https://www.openinstall.io/doc/ad_android.html)  
+``` js
+    /**
+    * adEnabled 为 true 表示 openinstall 需要获取广告追踪相关参数，默认为 false
+    * oaid 为 null 时，表示交由 openinstall 获取 oaid， 默认为 null
+    * gaid 为 null 时，表示交由 openinstall 获取 gaid， 默认为 null
+    */
+    _openinstallFlutterPlugin.config(true, "通过移动安全联盟获取到的 oaid", "通过 google api 获取到的 advertisingId");
+```
+例如： 开发者自己获取到了 oaid，但是需要 openinstall 获取 gaid，则调用代码为
+``` js
+    // f32a09dc-3312-d43e-6583-62fac13f33ae 是通过移动安全联盟获取到的 oaid
+    _openinstallFlutterPlugin.config(true, "f32a09dc-3312-d43e-6583-62fac13f33ae", null);
+```
+#### 设备唯一标识码获取  
+针对广告平台，为了精准地匹配到渠道，需要获取设备唯一标识码（IMEI），因此需要做额外的权限申请。  
+1、声明权限    
 在 `AndroidMainfest.xml` 配置文件中添加了需要申请的权限 `<uses-permission android:name="android.permission.READ_PHONE_STATE"/>`
 
-（2）可使用插件提供的 api 进行权限申请，调用初始化 api，第二个参数 `permission=true` 表示插件进行权限申请
+2、申请权限并初始化  
+可使用插件提供的 api 进行权限申请，调用初始化 api，第二个参数 `permission=true` 表示插件进行权限申请
 ``` dart
 _openinstallFlutterPlugin.init(wakeupHandler, true);
 ```
-
-（3）也可在 `Flutter` 自行进行权限申请，只需要确保在初始化之前申请权限，例如
+也可在 `Flutter` 自行进行权限申请，只需要确保在初始化之前申请权限，例如
 ``` dart
 // 使用 permission_handler
 if (await Permission.phone.request().isGranted) {

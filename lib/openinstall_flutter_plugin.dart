@@ -22,6 +22,19 @@ class OpeninstallFlutterPlugin {
   static const MethodChannel _channel =
       const MethodChannel('openinstall_flutter_plugin');
 
+  void config(bool adEnabled, String oaid, String gaid){
+    if (Platform.isAndroid) {
+      var args = new Map();
+      args["adEnabled"] = adEnabled;
+      args["oaid"] = oaid;
+      args['gaid'] = gaid;
+      _channel.invokeMethod('config', args);
+    }else{
+      // 仅使用于 Android 平台
+
+    }
+  }
+
   void init(EventHandler wakeupHandler, [bool permission = false]) {
     _wakeupHandler = wakeupHandler;
     _channel.invokeMethod("registerWakeup");
