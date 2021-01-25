@@ -187,11 +187,11 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     [OpeninstallFlutterPlugin handLinkURL:url];
-    return YES;
+    return NO;
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     [OpeninstallFlutterPlugin handLinkURL:url];
-    return YES;
+    return NO;
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
@@ -202,7 +202,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 #endif
 {
     [OpeninstallFlutterPlugin continueUserActivity:userActivity];
-    return YES;
+    return NO;
 }
 
 @end

@@ -48,7 +48,7 @@ class OpeninstallFlutterPlugin {
         _channel.invokeMethod("init");
       }
     }else {
-      print("OpenInstallSDK:------注意：插件版本>=1.3.1后，iOS环境下通用链接和scheme拉起的原生方法由插件内部来处理，使用版本<1.3.1的用户如果升级后，需要删除掉原先集成的iOS原生代码，以免一键拉起时，连续调用两次拉起回调方法-----");
+      print("OpenInstallSDK:插件版本>=1.3.1后，iOS环境下通用链接和scheme拉起的原生代理方法由插件内部来处理，如果出现拉起问题，请参考官方文档处理");
     }
   }
 

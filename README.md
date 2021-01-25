@@ -67,7 +67,44 @@ android: {
 </plist>
 ```
 
-**注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**
+**注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**  
+1） 1.3.1之前版本升级后可不做任何改动  
+2）首次集成插件的用户，如果拉起无法获取到参数，是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以有两种方法解决：  
+- 第一种方法，提早加载openinstall插件，无效的话使用第二种方法  
+- 第二种方法，将所有插件的拉起代理方法的逻辑，统一在AppDelegate文件中来处理，代码如下：  
+
+在头部引入
+``` objc
+//如果是swift，请在桥接文件（一般命名为XXX-Bridging-Header.h）中引入
+#import <openinstall_flutter_plugin/OpeninstallFlutterPlugin.h>
+
+```
+添加如下方法
+{% codetabs name="Object-C", type="objc" -%}
+//添加此方法以获取拉起参数
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler{
+    //处理通过openinstall一键唤起App时传递的数据
+    [OpeninstallFlutterPlugin continueUserActivity:userActivity];
+    //其他第三方回调:
+    return YES;
+}
+{%- language name="Swift", type="swift" -%}
+//swift4.2之前版本
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool{
+    //处理通过openinstall一键唤起App时传递的数据
+    OpeninstallFlutterPlugin.continue(userActivity)
+    //其他第三方回调:
+    return true
+}
+//swift4.2版本开始，系统方法修改为：
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool{
+    //处理通过openinstall一键唤起App时传递的数据
+    OpeninstallFlutterPlugin.continue(userActivity)
+    //其他第三方回调:
+    return true
+}
+{%- endcodetabs %}  
+
 
 - **openinstall完全兼容微信openSDK1.8.6以上版本的通用链接跳转功能，详情请看[iOS常见问题](https://www.openinstall.io/doc/ios_sdk_faq.html)**
 
@@ -89,7 +126,50 @@ android: {
 </array>
 ```
 
-**注意：插件版本>=1.3.1开始，scheme原生代码已在插件内部完成**
+**注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**  
+1） 1.3.1之前版本升级后可不做任何改动  
+2）首次集成插件的用户，如果拉起无法获取到参数，是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以有两种方法解决：  
+- 第一种方法，提早加载openinstall插件，无效的话使用第二种方法  
+- 第二种方法，将所有插件的拉起代理方法的逻辑，统一在AppDelegate文件中来处理，代码如下：  
+
+在 `ios/Runner/AppDelegate.m` 中头部引入：
+``` objc
+//如果是swift，请在桥接文件（一般命名为XXX-Bridging-Header.h）中引入
+#import <openinstall_flutter_plugin/OpeninstallFlutterPlugin.h>
+```
+
+在 `ios/Runner/AppDelegate.m` 中添加方法：  
+
+{% codetabs name="Object-C", type="objc" -%}
+//适用目前所有iOS版本
+-(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
+    //判断是否通过OpenInstall URL Scheme 唤起App
+    [OpeninstallFlutterPlugin handLinkURL:url];
+    //其他第三方回调；
+    return YES;
+}
+//iOS9以上，会优先走这个方法
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(nonnull NSDictionary *)options{
+    //判断是否通过OpenInstall URL Scheme 唤起App
+    [OpeninstallFlutterPlugin handLinkURL:url];
+    //其他第三方回调；
+     return YES;
+}
+{%- language name="Swift", type="swift" -%}
+//swift引用OC方法时，最好根据系统代码提示来写
+//适用目前所有iOS版本
+    func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
+        OpeninstallFlutterPlugin.handLinkURL(url)
+        return true
+    }
+//iOS9以上，会优先走这个方法
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        OpeninstallFlutterPlugin.handLinkURL(url)
+        return true
+    }
+//注意，swift4.2版本开始，系统方法修改为：
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool{}
+{%- endcodetabs %}
 
 ## 二、使用
 
