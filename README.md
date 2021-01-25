@@ -79,16 +79,17 @@ android: {
 #import <openinstall_flutter_plugin/OpeninstallFlutterPlugin.h>
 
 ```
-添加如下方法
-{% codetabs name="Object-C", type="objc" -%}
-//添加此方法以获取拉起参数
+添加如下方法  
+``` objc
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler{
     //处理通过openinstall一键唤起App时传递的数据
     [OpeninstallFlutterPlugin continueUserActivity:userActivity];
     //其他第三方回调:
     return YES;
 }
-{%- language name="Swift", type="swift" -%}
+```
+swift代码：  
+``` swift
 //swift4.2之前版本
 func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool{
     //处理通过openinstall一键唤起App时传递的数据
@@ -103,7 +104,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
     //其他第三方回调:
     return true
 }
-{%- endcodetabs %}  
+```
 
 
 - **openinstall完全兼容微信openSDK1.8.6以上版本的通用链接跳转功能，详情请看[iOS常见问题](https://www.openinstall.io/doc/ios_sdk_faq.html)**
@@ -140,7 +141,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 
 在 `ios/Runner/AppDelegate.m` 中添加方法：  
 
-{% codetabs name="Object-C", type="objc" -%}
+``` objc
 //适用目前所有iOS版本
 -(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
     //判断是否通过OpenInstall URL Scheme 唤起App
@@ -148,6 +149,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
     //其他第三方回调；
     return YES;
 }
+
 //iOS9以上，会优先走这个方法
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(nonnull NSDictionary *)options{
     //判断是否通过OpenInstall URL Scheme 唤起App
@@ -155,7 +157,10 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
     //其他第三方回调；
      return YES;
 }
-{%- language name="Swift", type="swift" -%}
+```
+
+swift代码：  
+``` swift
 //swift引用OC方法时，最好根据系统代码提示来写
 //适用目前所有iOS版本
     func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
@@ -169,7 +174,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
     }
 //注意，swift4.2版本开始，系统方法修改为：
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool{}
-{%- endcodetabs %}
+```
 
 ## 二、使用
 
