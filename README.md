@@ -281,6 +281,12 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 
 ### iOS平台
 
-将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件，注意：2021年初，苹果将正式启用新的隐私政策，届时，请开启`example/ad-track/OpeninstallFlutterPlugin.m`文件中的相关方法（打开注释）
+1、将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件
 
-备注：2021年初苹果公司将正式启用idfa隐私政策，届时需要对插件进行更新，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
+2、需要在Info.plist文件中配置权限  
+``` xml
+<key>NSUserTrackingUsageDescription</key>
+<string>请允许，以获取和使用您的IDFA</string>
+```
+
+备注：2021年iOS14.5苹果公司将正式启用idfa新隐私政策，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)

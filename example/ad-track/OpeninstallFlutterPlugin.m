@@ -2,9 +2,9 @@
 
 #import "OpenInstallSDK.h"
 #import <AdSupport/AdSupport.h>
-//#if defined(__IPHONE_14_0)
-//#import <AppTrackingTransparency/AppTrackingTransparency.h>//苹果隐私政策正式发布时打开
-//#endif
+#if defined(__IPHONE_14_0)
+#import <AppTrackingTransparency/AppTrackingTransparency.h>//苹果隐私政策正式发布时打开
+#endif
 
 typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
     OpenInstallSDKMethodInit,
@@ -166,8 +166,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 
 #pragma mark - Application Delegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    /*
-    //苹果隐私政策正式发布时打开
+    //iOS14.5苹果隐私政策正式启用
     #if defined(__IPHONE_14_0)
         if (@available(iOS 14, *)) {
             [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
@@ -179,9 +178,6 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
         NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
         [OpenInstallSDK initWithDelegate:self advertisingId:idfaStr];
     #endif
-    */
-    NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-    [OpenInstallSDK initWithDelegate:self advertisingId:idfaStr];
     return YES;
 }
 
