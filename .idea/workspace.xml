@@ -9,21 +9,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6da4f98-d808-4e92-8d93-62d3e41e02b5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/android/libs/OpenInstall_v2.5.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/libs/OpenInstall_v2.4.1.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[48a6b3e]" />
   <component name="FindInProjectRecents">
     <findStrings>
       <find>ActivityLife</find>
