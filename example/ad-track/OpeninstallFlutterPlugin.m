@@ -173,6 +173,9 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                 NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
                 [OpenInstallSDK initWithDelegate:self advertisingId:idfaStr];//不管用户是否授权，都要初始化
             }];
+        }else{
+            NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+            [OpenInstallSDK initWithDelegate:self advertisingId:idfaStr];
         }
     #else
         NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];

@@ -1,7 +1,11 @@
+## 1.4.3
+更新与广告接入相关文件，example/ad-track/OpeninstallFlutterPlugin.m文件
+
 ## 1.4.2
 SDK 更新内容
 - 提升数据安全性
 - 优化匹配逻辑
+
 ## 1.4.1
 修复上次升级导致的 android 编译错误
 
@@ -11,6 +15,7 @@ SDK 更新内容
 SDK 更新内容
 - 优化网络请求
 - 优化统计上报
+
 ## 1.3.3
 iOS 更新内容
 - 修复openinstall插件与其它使用了拉起代理的插件兼容问题
