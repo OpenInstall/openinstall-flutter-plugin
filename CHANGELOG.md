@@ -1,3 +1,8 @@
+## 1.4.4
+Android SDK 更新内容  
+- 优化匹配逻辑，提升参数还原精度
+- 修复了特殊情况下网络请求异常的问题
+
 ## 1.4.3
 更新与广告接入相关文件，example/ad-track/OpeninstallFlutterPlugin.m文件
 
