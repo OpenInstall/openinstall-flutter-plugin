@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:openinstall_flutter_plugin/openinstall_flutter_plugin.dart';
+import 'package:openinstall_flutter_plugin/openinstall_plugin_nullsafety.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,8 +11,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String log;
-  OpeninstallFlutterPlugin _openinstallFlutterPlugin;
+  late String log;
+  late OpeninstallFlutterPlugin _openinstallFlutterPlugin;
 
   @override
   void initState() {
@@ -28,9 +28,11 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
-	_openinstallFlutterPlugin.config(true, "oaid", null);
-    //_openinstallFlutterPlugin.init(wakeupHandler);
-    _openinstallFlutterPlugin.init(wakeupHandler, true);
+    // for ad track
+	// _openinstallFlutterPlugin.config(true, "oaid", null);
+  // _openinstallFlutterPlugin.init(wakeupHandler, true);
+    _openinstallFlutterPlugin.init(wakeupHandler);
+
 
     setState(() {
       log = "";

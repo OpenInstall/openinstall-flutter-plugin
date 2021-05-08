@@ -16,13 +16,13 @@ class OpeninstallFlutterPlugin {
 
   Future defaultHandler() async {}
 
-  EventHandler _wakeupHandler;
-  EventHandler _installHandler;
+  late EventHandler _wakeupHandler;
+  late EventHandler _installHandler;
 
   static const MethodChannel _channel =
       const MethodChannel('openinstall_flutter_plugin');
 
-  void config(bool adEnabled, String oaid, String gaid){
+  void config(bool adEnabled, String? oaid, String? gaid){
     if (Platform.isAndroid) {
       var args = new Map();
       args["adEnabled"] = adEnabled;
@@ -52,17 +52,17 @@ class OpeninstallFlutterPlugin {
     }
   }
 
-  Future<Null> _handleMethod(MethodCall call) async {
+  Future _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onWakeupNotification":
-        if (_wakeupHandler == null) {
-          return defaultHandler();
-        }
+        // if (_wakeupHandler == null) {
+        //   return defaultHandler();
+        // }
         return _wakeupHandler(call.arguments.cast<String, dynamic>());
       case "onInstallNotification":
-        if (_installHandler == null) {
-          return defaultHandler();
-        }
+        // if (_installHandler == null) {
+        //   return defaultHandler();
+        // }
         return _installHandler(call.arguments.cast<String, dynamic>());
       default:
         throw new UnsupportedError("Unrecognized Event");

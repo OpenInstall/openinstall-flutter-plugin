@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openinstall_flutter_plugin/openinstall_flutter_plugin.dart';
+import 'package:openinstall_flutter_plugin/openinstall_plugin_nullsafety.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('openinstall_flutter_plugin');

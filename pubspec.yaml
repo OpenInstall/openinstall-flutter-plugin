@@ -1,11 +1,12 @@
-name: openinstall_flutter_plugin
-description: openinstall_flutter_plugin is a Flutter plugin based on openinstall, which provides you with APP promotion technology services.
-version: 1.4.4
+name: openinstall_plugin_nullsafety
+description: openinstall_plugin_nullsafety is a Flutter plugin based on openinstall, and with null safety support.
+version: 1.0.0
 author: openinstall
 homepage: https://www.openinstall.io
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.12.0"
 
 dependencies:
   flutter:
@@ -25,8 +26,12 @@ flutter:
   # be modified. They are used by the tooling to maintain consistency when
   # adding or updating assets for this project.
   plugin:
-    androidPackage: io.openinstall.openinstall_flutter_plugin
-    pluginClass: OpeninstallFlutterPlugin
+    platforms:
+      android:
+        package: io.openinstall.openinstall_flutter_plugin
+        pluginClass: OpeninstallFlutterPlugin
+      ios:
+        pluginClass: OpeninstallFlutterPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
