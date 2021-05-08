@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:openinstall_flutter_plugin/openinstall_plugin_nullsafety.dart';
+import 'package:openinstall_flutter_plugin/openinstall_flutter_plugin.dart';
 
 void main() => runApp(MyApp());
 
