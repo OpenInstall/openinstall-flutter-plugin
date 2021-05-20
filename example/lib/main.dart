@@ -11,7 +11,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late String log;
+  String wakeUpLog = "";
+  String installLog = "";
   late OpeninstallFlutterPlugin _openinstallFlutterPlugin;
 
   @override
@@ -35,7 +36,6 @@ class _MyAppState extends State<MyApp> {
 
 
     setState(() {
-      log = "";
     });
   }
 
@@ -50,16 +50,17 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(log, style: TextStyle(fontSize: 20)),
+              Text(installLog, style: TextStyle(fontSize: 20)),
+              Text(wakeUpLog, style: TextStyle(fontSize: 20)),
               const SizedBox(height: 30),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () {
                   _openinstallFlutterPlugin.install(installHandler);
                 },
                 child: Text('getInstall', style: TextStyle(fontSize: 20)),
               ),
               const SizedBox(height: 30),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () {
                   _openinstallFlutterPlugin.reportRegister();
                 },
@@ -67,7 +68,7 @@ class _MyAppState extends State<MyApp> {
                     style: TextStyle(fontSize: 20)),
               ),
               const SizedBox(height: 30),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () {
                   _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
                 },
@@ -83,7 +84,7 @@ class _MyAppState extends State<MyApp> {
 
   Future installHandler(Map<String, dynamic> data) async {
     setState(() {
-      log = "install result : channel=" +
+      installLog += "install result : channel=" +
           data['channelCode'] +
           ", data=" +
           data['bindData'].toString() +
@@ -93,7 +94,7 @@ class _MyAppState extends State<MyApp> {
 
   Future wakeupHandler(Map<String, dynamic> data) async {
     setState(() {
-      log = "wakeup result : channel=" +
+      wakeUpLog += "wakeup result : channel=" +
           data['channelCode'] +
           ", data=" +
           data['bindData'].toString() +
