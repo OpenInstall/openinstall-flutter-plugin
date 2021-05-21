@@ -1,3 +1,6 @@
+## 2.0.1
+Android 使用 flutter v2 api
+
 ## 2.0.0
 支持新特性 null safety
 
