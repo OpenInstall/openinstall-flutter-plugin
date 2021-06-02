@@ -1,6 +1,9 @@
-## 2.0.1
+## 2.0.2
 iOS SDK更新到2.5.3版本，优化参数还原精度  
 修复json转换报错的问题
+
+## 2.0.1
+Android 使用 flutter v2 api
 
 ## 2.0.0
 支持新特性 null safety
