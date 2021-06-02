@@ -135,7 +135,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     id arguments = (jsonObject == nil ? [NSNull null] : jsonObject);
     NSArray* argumentsWrappedInArr = [NSArray arrayWithObject:arguments];
     NSString* argumentsJSON = [self cp_JSONString:argumentsWrappedInArr];
-    argumentsJSON = [argumentsJSON substringWithRange:NSMakeRange(1, [argumentsJSON length] - 2)];
+    if (argumentsJSON.length>2) {argumentsJSON = [argumentsJSON substringWithRange:NSMakeRange(1, [argumentsJSON length] - 2)];}
     return argumentsJSON;
 }
 
