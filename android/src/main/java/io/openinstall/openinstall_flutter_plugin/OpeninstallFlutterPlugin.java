@@ -35,6 +35,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private static final String METHOD_CONFIG = "config";
     private static final String METHOD_INIT = "init";
     private static final String METHOD_INIT_PERMISSION = "initWithPermission";
+    private static final String METHOD_WAKEUP = "registerWakeup";
     private static final String METHOD_INSTALL = "getInstall";
     private static final String METHOD_REGISTER = "reportRegister";
     private static final String METHOD_EFFECT_POINT = "reportEffectPoint";
@@ -83,6 +84,8 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 Log.d(TAG, "Activity is null, can't call initWithPermission");
                 init();
             }
+            result.success("OK");
+        } else if (METHOD_WAKEUP.equalsIgnoreCase(call.method)) {
             result.success("OK");
         } else if (METHOD_INSTALL.equalsIgnoreCase(call.method)) {
             Integer seconds = call.argument("seconds");

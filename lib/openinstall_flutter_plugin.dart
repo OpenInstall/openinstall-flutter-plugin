@@ -32,9 +32,9 @@ class OpeninstallFlutterPlugin {
   }
 
   void init(EventHandler wakeupHandler, [bool permission = false]) {
-    _channel.setMethodCallHandler(_handleMethod);
-
     _wakeupHandler = wakeupHandler;
+    _channel.setMethodCallHandler(_handleMethod);
+    _channel.invokeMethod("registerWakeup");
     if (Platform.isAndroid) {
       if (permission) {
         _channel.invokeMethod("initWithPermission");
