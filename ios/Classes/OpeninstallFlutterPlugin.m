@@ -25,6 +25,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     [registrar addApplicationDelegate:instance];
     instance.flutterMethodChannel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
+    [OpenInstallSDK initWithDelegate:instance];
 }
 
 - (instancetype)init {
