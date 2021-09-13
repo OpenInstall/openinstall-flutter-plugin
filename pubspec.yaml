@@ -1,6 +1,6 @@
 name: openinstall_flutter_plugin
 description: openinstall_flutter_plugin is a Flutter plugin based on openinstall, and with null safety support.
-version: 2.0.4
+version: 2.0.5
 homepage: https://www.openinstall.io
 
 environment:

@@ -2,9 +2,8 @@
 
 #import "OpenInstallSDK.h"
 #import <AdSupport/AdSupport.h>
-#if defined(__IPHONE_14_0)
-#import <AppTrackingTransparency/AppTrackingTransparency.h>//苹果隐私政策正式发布时打开
-#endif
+#import <AppTrackingTransparency/AppTrackingTransparency.h>//苹果新隐私政策
+#import <AdServices/AAAttribution.h>//ASA
 
 typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
     OpenInstallSDKMethodInit,
@@ -167,20 +166,28 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 
 + (void)initOpenInstall:(OpeninstallFlutterPlugin *)obj{
     //iOS14.5苹果隐私政策正式启用
-    #if defined(__IPHONE_14_0)
-        if (@available(iOS 14, *)) {
-            [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
-                NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-                [OpenInstallSDK initWithDelegate:obj advertisingId:idfaStr];//不管用户是否授权，都要初始化
-            }];
-        }else{
-            NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-            [OpenInstallSDK initWithDelegate:obj advertisingId:idfaStr];
-        }
-    #else
-        NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-        [OpenInstallSDK initWithDelegate:obj advertisingId:idfaStr];
-    #endif
+    if (@available(iOS 14, *)) {
+        [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
+            [self OpInit];
+        }];
+    }else{
+        [self OpInit];
+    }
+}
+
++ (void)OpInit:(OpeninstallFlutterPlugin *)obj{
+    //ASA广告归因
+    NSMutableDictionary *config = [[NSMutableDictionary alloc]init];
+    if (@available(iOS 14.3, *)) {
+        NSError *error;
+        NSString *token = [AAAttribution attributionTokenWithError:&error];
+        [config setValue:token forKey:OP_ASA_Token];
+    }
+    //第三方广告平台统计代码
+    NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+    [config setValue:idfaStr forKey:OP_Idfa_Id];
+    
+    [OpenInstallSDK initWithDelegate:self adsAttribution:config];
 }
 
 #pragma mark - Application Delegate

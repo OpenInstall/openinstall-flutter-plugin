@@ -281,6 +281,7 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 
 ### iOS平台
 
+#### 广告平台渠道和ASA渠道的配置
 1、将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件
 
 2、需要在Info.plist文件中配置权限  
@@ -290,3 +291,5 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 ```
 
 备注：2021年iOS14.5苹果公司将正式启用idfa新隐私政策，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
+
+ASA渠道相关详细文档参考：[ASA渠道使用指南](https://www.openinstall.io/doc/asa.html)
