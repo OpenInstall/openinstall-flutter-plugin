@@ -117,26 +117,10 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 }
 ```
 
-
-- **openinstall完全兼容微信openSDK1.8.6以上版本的通用链接跳转功能，详情请看[iOS常见问题](https://www.openinstall.io/doc/ios_sdk_faq.html)**
-
 ##### scheme 配置
-在 `ios/Runner/Info.plist` 文件中，在 `CFBundleURLTypes` 数组中添加应用对应的 scheme，或者在工程“TARGETS -> Info -> URL Types” 里快速添加，图文配置请看 [Flutter接入指南](https://www.openinstall.io/doc/flutter_sdk.html "iOS集成指南")
-``` xml
-<key>CFBundleURLTypes</key>
-<array>
-    <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLName</key>
-        <string>openinstall</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>"从openinstall官网后台获取应用的scheme"</string>
-        </array>
-    </dict>
-</array>
-```
+添加应用对应的 scheme，可在工程“TARGETS -> Info -> URL Types” 里快速添加，图文请看
+
+![scheme配置](https://res.cdn.openinstall.io/doc/ios-scheme.png)
 
 **注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**  
 1） 1.3.1之前版本升级后可不做任何改动  
