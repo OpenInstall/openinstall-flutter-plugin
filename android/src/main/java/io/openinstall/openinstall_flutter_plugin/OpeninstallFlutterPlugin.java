@@ -71,7 +71,9 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             String oaid = call.argument("oaid");
             String gaid = call.argument("gaid");
             Boolean adEnabled = call.argument("adEnabled");
-            config(adEnabled == null ? false : adEnabled, oaid, gaid);
+            Boolean macDisabled = call.argument("macDisabled");
+            Boolean imeiDisabled = call.argument("imeiDisabled");
+            config(adEnabled, oaid, gaid, macDisabled, imeiDisabled);
             result.success("OK");
         } else if (METHOD_INIT.equalsIgnoreCase(call.method)) {
             init();
@@ -109,14 +111,28 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         }
     }
 
-    private void config(boolean adEnabled, String oaid, String gaid) {
+    private void config(Boolean adEnabled, String oaid, String gaid,
+                        Boolean macDisabled, Boolean imeiDisabled) {
         Configuration.Builder builder = new Configuration.Builder();
-        builder.adEnabled(adEnabled);
+        builder.adEnabled(checkBoolean(adEnabled));
         builder.oaid(oaid);
         builder.gaid(gaid);
-        Log.d(TAG, String.format("config adEnabled=%b, oaid=%s, gaid=%s",
-                adEnabled, oaid == null ? "NULL" : oaid, gaid == null ? "NULL" : gaid));
+        if (checkBoolean(macDisabled)) {
+            builder.macDisabled();
+        }
+        if (checkBoolean(imeiDisabled)) {
+            builder.imeiDisabled();
+        }
         configuration = builder.build();
+        Log.d(TAG, String.format("Configuration: adEnabled=%s, oaid=%s, gaid=%s, macDisabled=%s, imeiDisabled=%s",
+                configuration.isAdEnabled(), configuration.getOaid(), configuration.getGaid(),
+                configuration.isMacDisabled(), configuration.isImeiDisabled()));
+
+    }
+
+    private boolean checkBoolean(Boolean bool) {
+        if (bool == null) return false;
+        return bool;
     }
 
     private void init() {

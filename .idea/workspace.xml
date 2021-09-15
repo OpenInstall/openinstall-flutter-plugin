@@ -33,8 +33,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6da4f98-d808-4e92-8d93-62d3e41e02b5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/android/libs/OpenInstall_v2.5.4.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/libs/OpenInstall_v2.5.3.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/android/app/src/main/res/drawable/launch_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/res/drawable/launch_background.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,7 +50,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[8AWX10HY2]" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -70,7 +78,7 @@
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/example/android/build.gradle" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/android/libs" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
@@ -125,25 +133,25 @@
     </state>
     <state x="-1180" y="275" key="FileChooserDialogImpl/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1621389428612" />
     <state x="740" y="275" key="FileChooserDialogImpl/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1621391860226" />
-    <state width="1877" height="314" key="GridCell.Tab.0.bottom" timestamp="1621495469163">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="432" key="GridCell.Tab.0.bottom" timestamp="1629700796671">
+      <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="369" key="GridCell.Tab.0.bottom/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1621411052618" />
+    <state width="1877" height="432" key="GridCell.Tab.0.bottom/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1629700796671" />
     <state width="1877" height="314" key="GridCell.Tab.0.bottom/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1621495469163" />
-    <state width="1877" height="314" key="GridCell.Tab.0.center" timestamp="1621495469163">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="432" key="GridCell.Tab.0.center" timestamp="1629700796670">
+      <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="369" key="GridCell.Tab.0.center/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1621411052618" />
+    <state width="1877" height="432" key="GridCell.Tab.0.center/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1629700796670" />
     <state width="1877" height="314" key="GridCell.Tab.0.center/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1621495469163" />
-    <state width="1877" height="314" key="GridCell.Tab.0.left" timestamp="1621495469163">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="432" key="GridCell.Tab.0.left" timestamp="1629700796670">
+      <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="369" key="GridCell.Tab.0.left/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1621411052618" />
+    <state width="1877" height="432" key="GridCell.Tab.0.left/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1629700796670" />
     <state width="1877" height="314" key="GridCell.Tab.0.left/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1621495469163" />
-    <state width="1877" height="314" key="GridCell.Tab.0.right" timestamp="1621495469163">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="432" key="GridCell.Tab.0.right" timestamp="1629700796670">
+      <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="369" key="GridCell.Tab.0.right/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1621411052618" />
+    <state width="1877" height="432" key="GridCell.Tab.0.right/-1920.0.1920.1040/0.0.1920.1040@-1920.0.1920.1040" timestamp="1629700796670" />
     <state width="1877" height="314" key="GridCell.Tab.0.right/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1621495469163" />
     <state x="461" y="164" key="SettingsEditor" timestamp="1621492427062">
       <screen x="0" y="0" width="1920" height="1040" />

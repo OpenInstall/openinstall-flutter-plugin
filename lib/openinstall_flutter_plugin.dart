@@ -19,6 +19,7 @@ class OpeninstallFlutterPlugin {
 
   static const MethodChannel _channel = const MethodChannel('openinstall_flutter_plugin');
 
+  // 旧版本使用，保留一段时间，防止 npm 自动升级使用最新版本插件出现问题
   void config(bool adEnabled, String? oaid, String? gaid) {
     if (Platform.isAndroid) {
       var args = new Map();
@@ -31,6 +32,16 @@ class OpeninstallFlutterPlugin {
     }
   }
 
+  void configAndroid(Map options) {
+    if (Platform.isAndroid) {
+      _channel.invokeMethod('config', options);
+    } else {
+      // 仅使用于 Android 平台
+    }
+  }
+
+  // initWithPermission 将移除
+  // 保留一段时间，防止 npm 自动升级使用最新版本插件出现问题
   void init(EventHandler wakeupHandler, [bool permission = false]) {
     _wakeupHandler = wakeupHandler;
     _channel.setMethodCallHandler(_handleMethod);
@@ -43,17 +54,6 @@ class OpeninstallFlutterPlugin {
       }
     } else {
       print( "OpenInstallSDK:插件版本>=1.3.1后，iOS环境下通用链接和scheme拉起的原生代理方法由插件内部来处理，如果出现拉起问题，请参考官方文档处理");
-    }
-  }
-
-  Future _handleMethod(MethodCall call) async {
-    switch (call.method) {
-      case "onWakeupNotification":
-        return _wakeupHandler(call.arguments.cast<String, dynamic>());
-      case "onInstallNotification":
-        return _installHandler(call.arguments.cast<String, dynamic>());
-      default:
-        throw new UnsupportedError("Unrecognized Event");
     }
   }
 
@@ -74,4 +74,16 @@ class OpeninstallFlutterPlugin {
     args["pointValue"] = pointValue;
     _channel.invokeMethod('reportEffectPoint', args);
   }
+
+  Future _handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case "onWakeupNotification":
+        return _wakeupHandler(call.arguments.cast<String, dynamic>());
+      case "onInstallNotification":
+        return _installHandler(call.arguments.cast<String, dynamic>());
+      default:
+        throw new UnsupportedError("Unrecognized Event");
+    }
+  }
+
 }

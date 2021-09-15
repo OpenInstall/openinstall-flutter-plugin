@@ -30,10 +30,14 @@ class _MyAppState extends State<MyApp> {
 
     _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
     // for ad track
-	// _openinstallFlutterPlugin.config(true, "oaid", null);
-  // _openinstallFlutterPlugin.init(wakeupHandler, true);
-    _openinstallFlutterPlugin.init(wakeupHandler);
+    var adConfig = new Map();
+    adConfig["adEnabled"] = true;
+    adConfig["oaid"] = "Xxx-sss-xxx-xxx-xx";
+    adConfig["imeiDisabled"] = true;
+	  _openinstallFlutterPlugin.configAndroid(adConfig);
 
+    _openinstallFlutterPlugin.init(wakeupHandler);
+    _openinstallFlutterPlugin.install(installHandler);
 
     setState(() {
     });
@@ -84,7 +88,7 @@ class _MyAppState extends State<MyApp> {
 
   Future installHandler(Map<String, dynamic> data) async {
     setState(() {
-      installLog += "install result : channel=" +
+      installLog = "install result : channel=" +
           data['channelCode'] +
           ", data=" +
           data['bindData'].toString() +
@@ -94,7 +98,7 @@ class _MyAppState extends State<MyApp> {
 
   Future wakeupHandler(Map<String, dynamic> data) async {
     setState(() {
-      wakeUpLog += "wakeup result : channel=" +
+      wakeUpLog = "wakeup result : channel=" +
           data['channelCode'] +
           ", data=" +
           data['bindData'].toString() +

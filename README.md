@@ -1,13 +1,19 @@
 # openinstall flutter plugin
 
+
+openinstall模块封装了openinstall平台原生SDK，集成了**渠道统计,携带参数安装,快速安装与一键跳转**功能，目前渠道支持**H5渠道**，**广告平台渠道**以及**Apple Search Ads (ASA) 渠道**。  
+使用openinstall模块可实现以下多种场景：  
+![实现场景](https://res.cdn.openinstall.io/doc/scene.jpg)  
+
 ## 一、配置
-请先从 [openinstall平台](https://developer.openinstall.io/) 申请开发者账号并创建应用，获取 `AppKey` 和 `scheme`
+前往 [openinstall控制台](https://developer.openinstall.io/) 创建应用并获取 openinstall 为应用分配的` appkey` 和 `scheme` 以及 iOS的关联域名（Associated Domains）  
+![appkey和scheme](https://res.cdn.openinstall.io/doc/ios-appkey.png)
 
 ### Android 平台配置
 
-#### 配置appkey
-在 `/android/app/build.gradle` 中添加下列代码：
-``` gradle
+#### 配置 appkey
+在 `/android/app/build.gradle` 中添加代码设置appkey：
+``` groovy
 android: {
   ....
   defaultConfig {
@@ -20,7 +26,7 @@ android: {
 ```
 
 #### 配置 scheme
-修改 `/android/app/src/main/AndroidMenifest.xml` 文件，在 `activity` 标签内添加 `intent-filter` (一般为 `MainActivity`)
+修改 `/android/app/src/main/AndroidMenifest.xml` 文件，在跳转 `Activity` 标签内添加 `intent-filter`
 ``` xml
 <intent-filter>
     <action android:name="android.intent.action.VIEW"/>
@@ -31,23 +37,28 @@ android: {
     <data android:scheme="openinstall为应用分配的scheme"/>
 </intent-filter>
 ```
+如果跳转与启动页面是同一 `Activity` ，则配置示例如图：  
+![flutter-android-manifest.jpg](https://res.cdn.openinstall.io/doc/flutter-android-manifest.jpg)
 
 ### iOS 平台配置
-#### 配置APP_KEY
+#### 配置 appkey
 在Flutter工程下的 `ios/Runner/Info.plist` 文件中配置 `appKey` 键值对，如下：
 ``` xml
 <key>com.openinstall.APP_KEY</key>
 <string>openinstall 分配给应用的 appkey</string>
 ```
-#### 以下为 一键拉起 功能相关配置和代码
+#### 一键跳转配置
 
 ##### universal links 相关配置
 
-* 开启Associated Domains服务
+1. 开启Associated Domains服务
 
-对于iOS，为确保能正常跳转，AppID必须开启Associated Domains功能，请到[苹果开发者网站](https://developer.apple.com/ "苹果开发者网站")，选择Certificate, Identifiers & Profiles，选择相应的AppID，开启Associated Domains。注意：当AppID重新编辑过之后，需要更新相应的mobileprovision证书。(图文配置步骤请看[Flutter接入指南](https://www.openinstall.io/doc/flutter_sdk.html "iOS集成指南"))。
+对于iOS，为确保能正常跳转，AppID必须开启Associated Domains功能，请到[苹果开发者网站](https://developer.apple.com/ "苹果开发者网站")，选择Certificate, Identifiers & Profiles，选择相应的AppID，开启Associated Domains。
+> 注意：当AppID重新编辑过之后，需要更新相应的mobileprovision证书。
 
-* 配置universal links关联域名（iOS 9以后推荐使用）
+![开启Associated Domains](https://res.cdn.openinstall.io/doc/ios-ulink-1.png)
+
+2.  配置universal links关联域名（iOS 9以后推荐使用）
 
 关联域名(Associated Domains) 的值请在openinstall控制台获取（openinstall应用控制台->iOS集成->iOS应用配置）
 
@@ -178,10 +189,10 @@ swift代码：
 
 ## 二、使用
 
-#### 初始化
+### 初始化
 `init(EventHandler wakeupHandler)`
 
-初始化时，需要传入**拉起回调**获取 web 端传过来的动态参数
+初始化时，需要传入**拉起回调** 获取 web 端传过来的动态参数
 
 示例：
 ``` dart
@@ -196,7 +207,7 @@ Future wakeupHandler(Map<String, dynamic> data) async {
 
 _openinstallFlutterPlugin.init(wakeupHandler);
 ```
-#### 获取安装参数
+### 获取安装参数
 `install(EventHandler installHandler, [int seconds = 10])`
 
 在 APP 需要安装参数时（由 web 网页中传递过来的，如邀请码、游戏房间号等动态参数），调用此接口，在回调中获取参数
@@ -228,7 +239,7 @@ _openinstallFlutterPlugin.reportRegister();
 #### 效果点统计
 `reportEffectPoint(String pointId, int pointValue)`  
 
-效果点建立在渠道基础之上，主要用来统计终端用户对某些特殊业务的使用效果。调用此接口时，请使用后台创建的 “效果点ID” 作为pointId 
+效果点建立在渠道基础之上，主要用来统计终端用户对某些特殊业务的使用效果。调用此接口时，请使用后台创建的 “效果点ID” 作为 pointId 
 
 示例：
 ``` dart
@@ -236,8 +247,13 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 ```
 
 ## 三、导出apk/ipa包并上传
-- 代码集成完毕后，需要导出安装包上传openinstall后台，openinstall会自动完成所有的应用配置工作。  
-- 上传完成后即可开始在线模拟测试，体验完整的App安装/拉起流程；待测试无误后，再完善下载配置信息。
+
+集成完毕后，通过云编译导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  
+![上传ipa安装包](https://res.cdn.openinstall.io/doc/upload-ipa-jump.png)
+
+
+上传完成后即可开始在线模拟测试，体验完整的App安装/跳转流程  
+![在线测试](https://res.cdn.openinstall.io/doc/js-test.png)
 
 
 ---
@@ -245,32 +261,32 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 ## 广告接入补充文档
 
 ### Android平台
-#### 广告平台配置
-针对广告平台接入，新增配置接口，在调用 `init` 之前调用。参考 [广告平台对接Android集成指引](https://www.openinstall.io/doc/ad_android.html)  
-``` js
-    /**
-    * adEnabled 为 true 表示 openinstall 需要获取广告追踪相关参数，默认为 false
-    * oaid 为 null 时，表示交由 openinstall 获取 oaid， 默认为 null
-    * gaid 为 null 时，表示交由 openinstall 获取 gaid， 默认为 null
-    */
-    _openinstallFlutterPlugin.config(true, "通过移动安全联盟获取到的 oaid", "通过 google api 获取到的 advertisingId");
-```
-例如： 开发者自己获取到了 oaid，但是需要 openinstall 获取 gaid，则调用代码为
-``` js
-    // f32a09dc-3312-d43e-6583-62fac13f33ae 是通过移动安全联盟获取到的 oaid
-    _openinstallFlutterPlugin.config(true, "f32a09dc-3312-d43e-6583-62fac13f33ae", null);
-```
-#### 设备唯一标识码获取  
-针对广告平台，为了精准地匹配到渠道，需要获取设备唯一标识码（IMEI），因此需要做额外的权限申请。  
-1、声明权限    
-在 `AndroidMainfest.xml` 配置文件中添加了需要申请的权限 `<uses-permission android:name="android.permission.READ_PHONE_STATE"/>`
-
-2、申请权限并初始化  
-可使用插件提供的 api 进行权限申请，调用初始化 api，第二个参数 `permission=true` 表示插件进行权限申请
+1、针对广告平台接入，新增配置接口，在调用 `init` 之前调用。参考 [广告平台对接Android集成指引](https://www.openinstall.io/doc/ad_android.html)  
 ``` dart
-_openinstallFlutterPlugin.init(wakeupHandler, true);
+    var adConfig = new Map();
+    adConfig["adEnabled"] = true;
+	_openinstallFlutterPlugin.configAndroid(adConfig);
 ```
-也可在 `Flutter` 自行进行权限申请，只需要确保在初始化之前申请权限，例如
+> **注意：** `_openinstallFlutterPlugin.config(adEnabled, oaid, gaid)` 接口已废弃，请使用新的配置接口
+
+可选参数说明：   
+
+| 参数名| 参数类型 | 描述 |  
+| --- | --- | --- |
+| adEnabled| bool | 是否需要 SDK 获取广告追踪相关参数 |
+| macDisabled | bool | 是否禁止 SDK 获取 mac 地址 |
+| imeiDisabled | bool | 是否禁止 SDK 获取 imei |
+| gaid | string | 通过 google api 获取到的 advertisingId，SDK 将不再获取gaid |
+| oaid | string | 通过移动安全联盟获取到的 oaid，SDK 将不再获取oaid |
+  
+2、针对广告平台，为了精准地匹配到渠道，需要获取设备唯一标识码（IMEI），因此需要在 AndroidManifest.xml 中添加权限声明 
+ 
+```
+<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+```
+
+3、在权限申请成功后，再进行openinstall初始化。**无论终端用户是否同意，都要调用初始化**  
+代码示例如下：  
 ``` dart
 // 使用 permission_handler
 if (await Permission.phone.request().isGranted) {
@@ -278,6 +294,8 @@ if (await Permission.phone.request().isGranted) {
 }
 _openinstallFlutterPlugin.init(wakeupHandler);
 ```
+> 注意：`_openinstallFlutterPlugin.init(wakeupHandler, permission);` 接口已废弃，请自行处理权限请求
+
 
 ### iOS平台
 
