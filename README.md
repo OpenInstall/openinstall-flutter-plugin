@@ -1,8 +1,8 @@
 # openinstall flutter plugin
 
 
-openinstall模块封装了openinstall平台原生SDK，集成了**渠道统计,携带参数安装,快速安装与一键跳转**功能，目前渠道支持**H5渠道**，**广告平台渠道**以及**Apple Search Ads (ASA) 渠道**。  
-使用openinstall模块可实现以下多种场景：  
+openinstall插件封装了openinstall平台原生SDK，集成了 **渠道统计,携带参数安装,快速安装与一键跳转** 功能，目前渠道支持 **H5渠道**，**广告平台渠道** 以及 **Apple Search Ads (ASA) 渠道**。  
+使用openinstall可实现以下多种场景：  
 ![实现场景](https://res.cdn.openinstall.io/doc/scene.jpg)  
 
 ## 一、配置
@@ -54,7 +54,8 @@ android: {
 1. 开启Associated Domains服务
 
 对于iOS，为确保能正常跳转，AppID必须开启Associated Domains功能，请到[苹果开发者网站](https://developer.apple.com/ "苹果开发者网站")，选择Certificate, Identifiers & Profiles，选择相应的AppID，开启Associated Domains。
-> 注意：当AppID重新编辑过之后，需要更新相应的mobileprovision证书。
+
+**注意：当AppID重新编辑过之后，需要更新相应的mobileprovision证书。**
 
 ![开启Associated Domains](https://res.cdn.openinstall.io/doc/ios-ulink-1.png)
 
@@ -235,7 +236,7 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 
 ## 三、导出apk/ipa包并上传
 
-集成完毕后，通过云编译导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  
+集成完毕后，导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  
 ![上传ipa安装包](https://res.cdn.openinstall.io/doc/upload-ipa-jump.png)
 
 
@@ -254,7 +255,7 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
     adConfig["adEnabled"] = true;
 	_openinstallFlutterPlugin.configAndroid(adConfig);
 ```
-> **注意：** `_openinstallFlutterPlugin.config(adEnabled, oaid, gaid)` 接口已废弃，请使用新的配置接口
+**注意： `_openinstallFlutterPlugin.config(adEnabled, oaid, gaid)` 接口已废弃，请使用新的配置接口**
 
 可选参数说明：   
 
@@ -281,7 +282,7 @@ if (await Permission.phone.request().isGranted) {
 }
 _openinstallFlutterPlugin.init(wakeupHandler);
 ```
-> 注意：`_openinstallFlutterPlugin.init(wakeupHandler, permission);` 接口已废弃，请自行处理权限请求
+**注意：** `_openinstallFlutterPlugin.init(wakeupHandler, permission);` 接口已废弃，请自行处理权限请求
 
 
 ### iOS平台
@@ -295,6 +296,6 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 <string>请允许，以获取和使用您的IDFA</string>
 ```
 
-备注：2021年iOS14.5苹果公司将正式启用idfa新隐私政策，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
+**备注：** 2021年iOS14.5苹果公司将正式启用idfa新隐私政策，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
 
 ASA渠道相关详细文档参考：[ASA渠道使用指南](https://www.openinstall.io/doc/asa.html)

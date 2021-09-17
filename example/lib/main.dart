@@ -29,12 +29,6 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
-    // for ad track
-    var adConfig = new Map();
-    adConfig["adEnabled"] = true;
-    adConfig["oaid"] = "Xxx-sss-xxx-xxx-xx";
-    adConfig["imeiDisabled"] = true;
-	  _openinstallFlutterPlugin.configAndroid(adConfig);
 
     _openinstallFlutterPlugin.init(wakeupHandler);
     _openinstallFlutterPlugin.install(installHandler);
