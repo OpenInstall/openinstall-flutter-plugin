@@ -78,6 +78,9 @@ android: {
 </plist>
 ```
 
+Xcode中快速添加：  
+![添加associatedDomains](https://res.cdn.openinstall.io/doc/ios-associated-domains.png)
+
 **注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**  
 1） 1.3.1之前版本升级后可不做任何改动  
 2）首次集成插件的用户，如果拉起无法获取到参数，是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以有两种方法解决：  
