@@ -168,10 +168,10 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     //iOS14.5苹果隐私政策正式启用
     if (@available(iOS 14, *)) {
         [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
-            [self OpInit];
+            [self OpInit:obj];
         }];
     }else{
-        [self OpInit];
+        [self OpInit:obj];
     }
 }
 
@@ -187,7 +187,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
     [config setValue:idfaStr forKey:OP_Idfa_Id];
     
-    [OpenInstallSDK initWithDelegate:self adsAttribution:config];
+    [OpenInstallSDK initWithDelegate:obj adsAttribution:config];
 }
 
 #pragma mark - Application Delegate

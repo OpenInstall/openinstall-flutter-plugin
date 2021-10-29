@@ -288,9 +288,19 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 ### iOS平台
 
 #### 广告平台渠道和ASA渠道的配置
-1、将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件
+1、工程目录下新建plugins文件夹用来存放本地插件，拷贝`openinstall_flutter_plugin`插件到plugins文件夹独自引用
 
-2、需要在Info.plist文件中配置权限  
+![新建文件夹](https://res.cdn.openinstall.io/doc/flutterForder.png)  
+
+2、在工程中找到pubspec.yaml，修改为本地插件引用方式
+
+![本地插件引用](https://res.cdn.openinstall.io/doc/flutterYaml.png)  
+
+3、将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件
+
+![文件替换](https://res.cdn.openinstall.io/doc/flutterAdTrack.png)  
+
+4、需要在Info.plist文件中配置权限  
 ``` xml
 <key>NSUserTrackingUsageDescription</key>
 <string>请允许，以获取和使用您的IDFA</string>
