@@ -1,7 +1,7 @@
 # openinstall flutter plugin
 
 
-openinstall插件封装了openinstall平台原生SDK，集成了 **渠道统计,携带参数安装,快速安装与一键跳转** 功能，目前渠道支持 **H5渠道**，**广告平台渠道** 以及 **Apple Search Ads (ASA) 渠道**。  
+openinstall插件封装了openinstall平台原生SDK，集成了 **渠道统计,携带参数安装,快速安装与一键拉起** 功能，目前渠道支持 **H5渠道**，**广告平台渠道** 以及 **Apple Search Ads (ASA) 渠道**。  
 使用openinstall可实现以下多种场景：  
 ![实现场景](https://res.cdn.openinstall.io/doc/scene.jpg)  
 
@@ -47,7 +47,7 @@ android: {
 <key>com.openinstall.APP_KEY</key>
 <string>openinstall 分配给应用的 appkey</string>
 ```
-#### 一键跳转配置
+#### 一键拉起配置
 
 ##### universal links 相关配置
 
