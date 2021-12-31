@@ -10,8 +10,11 @@ import androidx.annotation.NonNull;
 import com.fm.openinstall.Configuration;
 import com.fm.openinstall.OpenInstall;
 import com.fm.openinstall.listener.AppInstallAdapter;
+import com.fm.openinstall.listener.AppInstallRetryAdapter;
 import com.fm.openinstall.listener.AppWakeUpAdapter;
+import com.fm.openinstall.listener.AppWakeUpListener;
 import com.fm.openinstall.model.AppData;
+import com.fm.openinstall.model.Error;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +40,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private static final String METHOD_INIT_PERMISSION = "initWithPermission";
     private static final String METHOD_WAKEUP = "registerWakeup";
     private static final String METHOD_INSTALL = "getInstall";
+    private static final String METHOD_INSTALL_RETRY = "getInstallCanRetry";
     private static final String METHOD_REGISTER = "reportRegister";
     private static final String METHOD_EFFECT_POINT = "reportEffectPoint";
 
@@ -49,6 +53,8 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private Intent intentHolder = null;
     private volatile boolean initialized = false;
     private Configuration configuration = null;
+
+    private boolean alwaysCallback = false;
 
 
     @Override
@@ -76,6 +82,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             config(adEnabled, oaid, gaid, macDisabled, imeiDisabled);
             result.success("OK");
         } else if (METHOD_INIT.equalsIgnoreCase(call.method)) {
+            alwaysCallback = call.argument("alwaysCallback");
             init();
             result.success("OK");
         } else if (METHOD_INIT_PERMISSION.equalsIgnoreCase(call.method)) {
@@ -95,6 +102,17 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 @Override
                 public void onInstall(AppData appData) {
                     channel.invokeMethod(METHOD_INSTALL_NOTIFICATION, data2Map(appData));
+                }
+            }, seconds == null ? 0 : seconds);
+            result.success("OK");
+        } else if (METHOD_INSTALL_RETRY.equalsIgnoreCase(call.method)) {
+            Integer seconds = call.argument("seconds");
+            OpenInstall.getInstallCanRetry(new AppInstallRetryAdapter() {
+                @Override
+                public void onInstall(AppData appData, boolean retry) {
+                    Map<String, String> data = data2Map(appData);
+                    data.put("retry", String.valueOf(retry));
+                    channel.invokeMethod(METHOD_INSTALL_NOTIFICATION, data);
                 }
             }, seconds == null ? 0 : seconds);
             result.success("OK");
@@ -143,10 +161,11 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             if (intentHolder == null) {
                 Activity activity = activityPluginBinding.getActivity();
                 if (activity != null) {
-                    OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+                    wakeup(activity.getIntent());
                 }
             } else {
-                OpenInstall.getWakeUp(intentHolder, wakeUpAdapter);
+                wakeup(intentHolder);
+                intentHolder = null;
             }
         } else {
             Log.d(TAG, "Context is null, can not init OpenInstall");
@@ -164,9 +183,10 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 activityPluginBinding.removeRequestPermissionsResultListener(permissionsResultListener);
                 initialized = true;
                 if (intentHolder == null) {
-                    OpenInstall.getWakeUp(activity.getIntent(), wakeUpAdapter);
+                    wakeup(activity.getIntent());
                 } else {
-                    OpenInstall.getWakeUp(intentHolder, wakeUpAdapter);
+                    wakeup(intentHolder);
+                    intentHolder = null;
                 }
             }
         });
@@ -178,7 +198,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 @Override
                 public boolean onNewIntent(Intent intent) {
                     if (initialized) {
-                        OpenInstall.getWakeUp(intent, wakeUpAdapter);
+                        wakeup(intent);
                     } else {
                         intentHolder = intent;
                     }
@@ -186,13 +206,27 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 }
             };
 
-    private final AppWakeUpAdapter wakeUpAdapter = new AppWakeUpAdapter() {
-        @Override
-        public void onWakeUp(AppData appData) {
-            channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
-            intentHolder = null;
+
+    private void wakeup(Intent intent) {
+        if (alwaysCallback) {
+            OpenInstall.getWakeUpAlwaysCallback(intent, new AppWakeUpListener() {
+                @Override
+                public void onWakeUpFinish(AppData appData, Error error) {
+                    if (error != null) {
+                        Log.d(TAG, "getWakeUpAlwaysCallback : " + error.toString());
+                    }
+                    channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
+                }
+            });
+        } else {
+            OpenInstall.getWakeUp(intent, new AppWakeUpAdapter() {
+                @Override
+                public void onWakeUp(AppData appData) {
+                    channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
+                }
+            });
         }
-    };
+    }
 
     private final PluginRegistry.RequestPermissionsResultListener permissionsResultListener =
             new PluginRegistry.RequestPermissionsResultListener() {
@@ -205,8 +239,10 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
 
     private static Map<String, String> data2Map(AppData data) {
         Map<String, String> result = new HashMap<>();
-        result.put("channelCode", data.getChannel());
-        result.put("bindData", data.getData());
+        if (data != null) {
+            result.put("channelCode", data.getChannel());
+            result.put("bindData", data.getData());
+        }
         return result;
     }
 
