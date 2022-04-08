@@ -29,12 +29,10 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
-
     _openinstallFlutterPlugin.init(wakeupHandler, alwaysCallback: true);
-    _openinstallFlutterPlugin.getInstallCanRetry(installHandler, 3);
+    _openinstallFlutterPlugin.install(installHandler);
 
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -81,21 +79,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future installHandler(Map<String, dynamic> data) async {
+    print("installHandler : " + data.toString());
     setState(() {
-      installLog = "install result : "
-          "channel=" + data['channelCode'] +
-          ", data=" + data['bindData'].toString() +
-          ", retry=" + data['retry'].toString() +
-          "\n";
+      installLog = "install result : channel=" + data['channelCode']
+          + ", data=" + data['bindData'].toString() + "\n";
     });
   }
 
   Future wakeupHandler(Map<String, dynamic> data) async {
+    print("wakeupHandler : " + data.toString());
     setState(() {
-      wakeUpLog = "wakeup result : "
-          "channel=" + data['channelCode'] +
-          ", data=" + data['bindData'].toString() +
-          "\n";
+      wakeUpLog = "wakeup result : channel=" + data['channelCode']
+          + ", data=" + data['bindData'].toString() + "\n";
     });
   }
 }

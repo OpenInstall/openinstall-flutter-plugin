@@ -31,16 +31,19 @@ import io.flutter.plugin.common.PluginRegistry;
 /**
  * OpeninstallFlutterPlugin
  */
-public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
+public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.NewIntentListener {
 
     private static final String TAG = "OpenInstallPlugin";
 
+    @Deprecated
+    private static final String METHOD_INIT_PERMISSION = "initWithPermission";
+    @Deprecated
+    private static final String METHOD_WAKEUP = "registerWakeup";
+
     private static final String METHOD_CONFIG = "config";
     private static final String METHOD_INIT = "init";
-    private static final String METHOD_INIT_PERMISSION = "initWithPermission";
-    private static final String METHOD_WAKEUP = "registerWakeup";
-    private static final String METHOD_INSTALL = "getInstall";
     private static final String METHOD_INSTALL_RETRY = "getInstallCanRetry";
+    private static final String METHOD_INSTALL = "getInstall";
     private static final String METHOD_REGISTER = "reportRegister";
     private static final String METHOD_EFFECT_POINT = "reportEffectPoint";
 
@@ -67,12 +70,20 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     @Override
     public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
         activityPluginBinding = binding;
-        activityPluginBinding.addOnNewIntentListener(newIntentListener);
+
+        binding.addOnNewIntentListener(this);
+        wakeup(binding.getActivity().getIntent());
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+        activityPluginBinding = binding;
+        binding.addOnNewIntentListener(this);
     }
 
     @Override
     public void onMethodCall(MethodCall call, @NonNull Result result) {
-        Log.d(TAG, "call method " + call.method);
+        Log.d(TAG, "invoke " + call.method);
         if (METHOD_CONFIG.equalsIgnoreCase(call.method)) {
             String oaid = call.argument("oaid");
             String gaid = call.argument("gaid");
@@ -86,13 +97,8 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             init();
             result.success("OK");
         } else if (METHOD_INIT_PERMISSION.equalsIgnoreCase(call.method)) {
-            Activity activity = activityPluginBinding.getActivity();
-            if (activity != null) {
-                initWithPermission(activity);
-            } else {
-                Log.d(TAG, "Activity is null, can't call initWithPermission");
-                init();
-            }
+            alwaysCallback = call.argument("alwaysCallback");
+            initWithPermission();
             result.success("OK");
         } else if (METHOD_WAKEUP.equalsIgnoreCase(call.method)) {
             result.success("OK");
@@ -158,76 +164,71 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         if (context != null) {
             OpenInstall.init(context, configuration);
             initialized = true;
-            if (intentHolder == null) {
-                Activity activity = activityPluginBinding.getActivity();
-                if (activity != null) {
-                    wakeup(activity.getIntent());
-                }
-            } else {
+            if (intentHolder != null) {
                 wakeup(intentHolder);
                 intentHolder = null;
             }
         } else {
-            Log.d(TAG, "Context is null, can not init OpenInstall");
+            Log.d(TAG, "Context is null, can't init");
         }
     }
 
-    private void initWithPermission(final Activity activity) {
+    @Deprecated
+    private void initWithPermission() {
+        Activity activity = activityPluginBinding.getActivity();
         if (activity == null) {
-            return;
-        }
-        activityPluginBinding.addRequestPermissionsResultListener(permissionsResultListener);
-        OpenInstall.initWithPermission(activity, configuration, new Runnable() {
-            @Override
-            public void run() {
-                activityPluginBinding.removeRequestPermissionsResultListener(permissionsResultListener);
-                initialized = true;
-                if (intentHolder == null) {
-                    wakeup(activity.getIntent());
-                } else {
-                    wakeup(intentHolder);
-                    intentHolder = null;
+            Log.d(TAG, "Activity is null, can't initWithPermission, replace with init");
+            init();
+        } else {
+            activityPluginBinding.addRequestPermissionsResultListener(permissionsResultListener);
+            OpenInstall.initWithPermission(activity, configuration, new Runnable() {
+                @Override
+                public void run() {
+                    activityPluginBinding.removeRequestPermissionsResultListener(permissionsResultListener);
+                    initialized = true;
+                    if (intentHolder != null) {
+                        wakeup(intentHolder);
+                        intentHolder = null;
+                    }
                 }
-            }
-        });
-
+            });
+        }
     }
 
-    private final PluginRegistry.NewIntentListener newIntentListener =
-            new PluginRegistry.NewIntentListener() {
-                @Override
-                public boolean onNewIntent(Intent intent) {
-                    if (initialized) {
-                        wakeup(intent);
-                    } else {
-                        intentHolder = intent;
-                    }
-                    return false;
-                }
-            };
+    @Override
+    public boolean onNewIntent(Intent intent) {
+        wakeup(intent);
+        return false;
+    }
 
 
     private void wakeup(Intent intent) {
-        if (alwaysCallback) {
-            OpenInstall.getWakeUpAlwaysCallback(intent, new AppWakeUpListener() {
-                @Override
-                public void onWakeUpFinish(AppData appData, Error error) {
-                    if (error != null) {
-                        Log.d(TAG, "getWakeUpAlwaysCallback : " + error.toString());
+        if (initialized) {
+            Log.d(TAG, "getWakeUp : alwaysCallback=" + alwaysCallback);
+            if (alwaysCallback) {
+                OpenInstall.getWakeUpAlwaysCallback(intent, new AppWakeUpListener() {
+                    @Override
+                    public void onWakeUpFinish(AppData appData, Error error) {
+                        if (error != null) { // 可忽略，仅调试使用
+                            Log.d(TAG, "getWakeUpAlwaysCallback : " + error.getErrorMsg());
+                        }
+                        channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
                     }
-                    channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
-                }
-            });
+                });
+            } else {
+                OpenInstall.getWakeUp(intent, new AppWakeUpAdapter() {
+                    @Override
+                    public void onWakeUp(AppData appData) {
+                        channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
+                    }
+                });
+            }
         } else {
-            OpenInstall.getWakeUp(intent, new AppWakeUpAdapter() {
-                @Override
-                public void onWakeUp(AppData appData) {
-                    channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
-                }
-            });
+            intentHolder = intent;
         }
     }
 
+    @Deprecated
     private final PluginRegistry.RequestPermissionsResultListener permissionsResultListener =
             new PluginRegistry.RequestPermissionsResultListener() {
                 @Override
@@ -253,11 +254,6 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
 
     @Override
     public void onDetachedFromActivityForConfigChanges() {
-
-    }
-
-    @Override
-    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
 
     }
 
