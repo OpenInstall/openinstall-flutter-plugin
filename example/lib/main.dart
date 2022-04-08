@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
-    _openinstallFlutterPlugin.init(wakeupHandler, alwaysCallback: true);
+    _openinstallFlutterPlugin.init(wakeupHandler);
     _openinstallFlutterPlugin.install(installHandler);
 
     setState(() {});
