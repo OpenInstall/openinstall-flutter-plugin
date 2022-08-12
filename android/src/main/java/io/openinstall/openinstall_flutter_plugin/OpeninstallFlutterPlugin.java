@@ -41,6 +41,8 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private static final String METHOD_WAKEUP = "registerWakeup";
 
     private static final String METHOD_CONFIG = "config";
+    private static final String METHOD_CLIPBOARD_ENABLED = "clipBoardEnabled";
+    private static final String METHOD_SERIAL_ENABLED = "serialEnabled";
     private static final String METHOD_INIT = "init";
     private static final String METHOD_INSTALL_RETRY = "getInstallCanRetry";
     private static final String METHOD_INSTALL = "getInstall";
@@ -92,12 +94,22 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             Boolean imeiDisabled = call.argument("imeiDisabled");
             config(adEnabled, oaid, gaid, macDisabled, imeiDisabled);
             result.success("OK");
+        } else if (METHOD_CLIPBOARD_ENABLED.equalsIgnoreCase(call.method)) {
+            Boolean enabled = call.argument("enabled");
+            OpenInstall.clipBoardEnabled(enabled == null ? true : enabled);
+            result.success("OK");
+        } else if (METHOD_SERIAL_ENABLED.equalsIgnoreCase(call.method)) {
+            Boolean enabled = call.argument("enabled");
+            OpenInstall.serialEnabled(enabled == null ? true : enabled);
+            result.success("OK");
         } else if (METHOD_INIT.equalsIgnoreCase(call.method)) {
-            alwaysCallback = call.argument("alwaysCallback");
+            Boolean box = call.argument("alwaysCallback");
+            alwaysCallback = box == null ? false : box;
             init();
             result.success("OK");
         } else if (METHOD_INIT_PERMISSION.equalsIgnoreCase(call.method)) {
-            alwaysCallback = call.argument("alwaysCallback");
+            Boolean box = call.argument("alwaysCallback");
+            alwaysCallback = box == null ? false : box;
             initWithPermission();
             result.success("OK");
         } else if (METHOD_WAKEUP.equalsIgnoreCase(call.method)) {

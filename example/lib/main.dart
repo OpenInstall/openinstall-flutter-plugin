@@ -28,7 +28,8 @@ class _MyAppState extends State<MyApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    _openinstallFlutterPlugin = new OpeninstallFlutterPlugin();
+    _openinstallFlutterPlugin = OpeninstallFlutterPlugin();
+
     _openinstallFlutterPlugin.init(wakeupHandler);
     _openinstallFlutterPlugin.install(installHandler);
 
@@ -78,19 +79,21 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future installHandler(Map<String, dynamic> data) async {
+  Future<Object> installHandler(Map<String, Object> data) async {
     print("installHandler : " + data.toString());
     setState(() {
-      installLog = "install result : channel=" + data['channelCode']
+      installLog = "install result : channel=" + data['channelCode'].toString()
           + ", data=" + data['bindData'].toString() + "\n";
     });
+    return "";
   }
 
-  Future wakeupHandler(Map<String, dynamic> data) async {
+  Future<Object> wakeupHandler(Map<String, Object> data) async {
     print("wakeupHandler : " + data.toString());
     setState(() {
-      wakeUpLog = "wakeup result : channel=" + data['channelCode']
+      wakeUpLog = "wakeup result : channel=" + data['channelCode'].toString()
           + ", data=" + data['bindData'].toString() + "\n";
     });
+    return "";
   }
 }

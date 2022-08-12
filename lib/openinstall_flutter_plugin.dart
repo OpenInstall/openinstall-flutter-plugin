@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-typedef Future<dynamic> EventHandler(Map<String, dynamic> data);
+typedef Future<Object> EventHandler(Map<String, Object> data);
 
 class OpeninstallFlutterPlugin {
   // 单例
@@ -38,6 +38,27 @@ class OpeninstallFlutterPlugin {
   void configAndroid(Map options) {
     if (Platform.isAndroid) {
       _channel.invokeMethod('config', options);
+    } else {
+      // 仅使用于 Android 平台
+    }
+  }
+
+  // 关闭剪切板读取
+  void clipBoardEnabled(bool enabled){
+    if (Platform.isAndroid) {
+      var args = new Map();
+      args["enabled"] = enabled;
+      _channel.invokeMethod('clipBoardEnabled', args);
+    } else {
+      // 仅使用于 Android 平台
+    }
+  }
+  // 关闭SerialNumber读取
+  void serialEnabled(bool enabled){
+    if (Platform.isAndroid) {
+      var args = new Map();
+      args["enabled"] = enabled;
+      _channel.invokeMethod('serialEnabled', args);
     } else {
       // 仅使用于 Android 平台
     }
@@ -104,9 +125,9 @@ class OpeninstallFlutterPlugin {
     print(call.method);
     switch (call.method) {
       case "onWakeupNotification":
-        return _wakeupHandler(call.arguments.cast<String, dynamic>());
+        return _wakeupHandler(call.arguments.cast<String, Object>());
       case "onInstallNotification":
-        return _installHandler(call.arguments.cast<String, dynamic>());
+        return _installHandler(call.arguments.cast<String, Object>());
       default:
         throw new UnsupportedError("Unrecognized Event");
     }
