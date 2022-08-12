@@ -1,3 +1,8 @@
+## 2.2.2
+Android 更新 SDK 到 2.6.3
+iOS 更新 SDK 到 2.5.5
+将 dynamic 替换为 Object
+
 ## 2.2.1
 Android 更新内容
 - 更新 SDK 到 2.6.2
