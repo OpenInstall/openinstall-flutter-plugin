@@ -261,12 +261,17 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 
 | 参数名| 参数类型 | 描述 |  
 | --- | --- | --- |
-| adEnabled| bool | 广告平台接入开关（必须） |
+| androidId | string | android_id 原值 |
+| serialNumber | string | serialNumber原值 |
+| adEnabled| bool | 接入移动广告效果监测时需要开启 |
 | macDisabled | bool | 是否禁止 SDK 获取 mac 地址 |
 | imeiDisabled | bool | 是否禁止 SDK 获取 imei |
 | gaid | string | 通过 google api 获取到的 advertisingId，SDK 将不再获取gaid |
 | oaid | string | 通过移动安全联盟获取到的 oaid，SDK 将不再获取oaid |
-  
+| imei | string | imei 原值 |
+| mac | string | mac address 原值 |
+
+
 2、针对广告平台，为了精准地匹配到渠道，需要获取设备唯一标识码（IMEI），因此需要在 AndroidManifest.xml 中添加权限声明 
  
 ```

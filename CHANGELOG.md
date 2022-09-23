@@ -1,3 +1,6 @@
+## 2.2.3
+Android 更新 SDK 到 2.6.4
+
 ## 2.2.2
 Android 更新 SDK 到 2.6.3
 iOS 更新 SDK 到 2.5.5
