@@ -87,12 +87,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     public void onMethodCall(MethodCall call, @NonNull Result result) {
         Log.d(TAG, "invoke " + call.method);
         if (METHOD_CONFIG.equalsIgnoreCase(call.method)) {
-            String oaid = call.argument("oaid");
-            String gaid = call.argument("gaid");
-            Boolean adEnabled = call.argument("adEnabled");
-            Boolean macDisabled = call.argument("macDisabled");
-            Boolean imeiDisabled = call.argument("imeiDisabled");
-            config(adEnabled, oaid, gaid, macDisabled, imeiDisabled);
+            config(call);
             result.success("OK");
         } else if (METHOD_CLIPBOARD_ENABLED.equalsIgnoreCase(call.method)) {
             Boolean enabled = call.argument("enabled");
@@ -147,22 +142,58 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         }
     }
 
-    private void config(Boolean adEnabled, String oaid, String gaid,
-                        Boolean macDisabled, Boolean imeiDisabled) {
+    private void config(MethodCall call) {
+
         Configuration.Builder builder = new Configuration.Builder();
-        builder.adEnabled(checkBoolean(adEnabled));
-        builder.oaid(oaid);
-        builder.gaid(gaid);
-        if (checkBoolean(macDisabled)) {
-            builder.macDisabled();
+
+        if (call.hasArgument("androidId")) {
+            String androidId = call.argument("androidId");
+            builder.androidId(androidId);
         }
-        if (checkBoolean(imeiDisabled)) {
-            builder.imeiDisabled();
+        if (call.hasArgument("serialNumber")) {
+            String serialNumber = call.argument("serialNumber");
+            builder.serialNumber(serialNumber);
         }
+        if (call.hasArgument("adEnabled")) {
+            Boolean adEnabled = call.argument("adEnabled");
+            builder.adEnabled(checkBoolean(adEnabled));
+        }
+        if (call.hasArgument("oaid")) {
+            String oaid = call.argument("oaid");
+            builder.oaid(oaid);
+        }
+        if (call.hasArgument("gaid")) {
+            String gaid = call.argument("gaid");
+            builder.gaid(gaid);
+        }
+        if(call.hasArgument("imeiDisabled")){
+            Boolean imeiDisabled = call.argument("imeiDisabled");
+            if (checkBoolean(imeiDisabled)) {
+                builder.imeiDisabled();
+            }
+        }
+        if (call.hasArgument("imei")) {
+            String imei = call.argument("imei");
+            builder.imei(imei);
+        }
+        if(call.hasArgument("macDisabled")){
+            Boolean macDisabled = call.argument("macDisabled");
+            if (checkBoolean(macDisabled)) {
+                builder.macDisabled();
+            }
+        }
+        if (call.hasArgument("mac")) {
+            String macAddress = call.argument("mac");
+            builder.macAddress(macAddress);
+        }
+
         configuration = builder.build();
-        Log.d(TAG, String.format("Configuration: adEnabled=%s, oaid=%s, gaid=%s, macDisabled=%s, imeiDisabled=%s",
-                configuration.isAdEnabled(), configuration.getOaid(), configuration.getGaid(),
-                configuration.isMacDisabled(), configuration.isImeiDisabled()));
+//        Log.d(TAG, String.format("Configuration: adEnabled=%s, oaid=%s, gaid=%s, macDisabled=%s, imeiDisabled=%s, "
+//                        + "androidId=%s, serialNumber=%s, imei=%s, mac=%s",
+//                configuration.isAdEnabled(), configuration.getOaid(), configuration.getGaid(),
+//                configuration.isMacDisabled(), configuration.isImeiDisabled(),
+//                configuration.getAndroidId(), configuration.getSerialNumber(),
+//                configuration.getImei(), configuration.getMacAddress()));
 
     }
 
