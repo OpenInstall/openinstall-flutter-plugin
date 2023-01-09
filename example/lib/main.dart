@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:openinstall_flutter_plugin/openinstall_flutter_plugin.dart';
@@ -70,6 +71,18 @@ class _MyAppState extends State<MyApp> {
                   _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
                 },
                 child: const Text('reportEffectPoint',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  Map<String, String> extraMap = {
+                    "systemVersion": Platform.operatingSystemVersion,
+                    "flutterVersion": Platform.version
+                  };
+                  _openinstallFlutterPlugin.reportEffectPoint("effect_detail", 1, extraMap);
+                },
+                child: const Text('reportEffectDetail',
                     style: TextStyle(fontSize: 20)),
               ),
             ],

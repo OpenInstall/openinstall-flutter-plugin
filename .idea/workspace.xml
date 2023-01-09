@@ -33,17 +33,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6da4f98-d808-4e92-8d93-62d3e41e02b5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/android/libs/OpenInstall_v2.7.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/android/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/libs/OpenInstall_v2.6.4.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/io/openinstall/openinstall_flutter_plugin/OpeninstallFlutterPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/openinstall_flutter_plugin.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[192.168.0.120:5555]" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -102,7 +106,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="ad-track" />
+                        <option value="master" />
                       </list>
                     </value>
                   </entry>
@@ -116,37 +120,25 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1663920572617">
+    <state x="92" y="92" width="1736" height="856" key="DiffContextDialog" timestamp="1673240588519">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="740" y="275" key="FileChooserDialogImpl/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1663920572617" />
-    <state width="1141" height="421" key="GridCell.Tab.0.bottom" timestamp="1663917744404">
-      <screen x="-1920" y="5" width="1920" height="1040" />
-    </state>
-    <state width="1141" height="421" key="GridCell.Tab.0.bottom/-1920.5.1920.1040/0.0.1920.1040@-1920.5.1920.1040" timestamp="1663917744404" />
-    <state width="1142" height="421" key="GridCell.Tab.0.bottom/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1659347274004" />
-    <state width="1141" height="421" key="GridCell.Tab.0.center" timestamp="1663917744404">
-      <screen x="-1920" y="5" width="1920" height="1040" />
-    </state>
-    <state width="1141" height="421" key="GridCell.Tab.0.center/-1920.5.1920.1040/0.0.1920.1040@-1920.5.1920.1040" timestamp="1663917744404" />
-    <state width="1142" height="421" key="GridCell.Tab.0.center/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1659347274004" />
-    <state width="1141" height="421" key="GridCell.Tab.0.left" timestamp="1663917744404">
-      <screen x="-1920" y="5" width="1920" height="1040" />
-    </state>
-    <state width="1141" height="421" key="GridCell.Tab.0.left/-1920.5.1920.1040/0.0.1920.1040@-1920.5.1920.1040" timestamp="1663917744404" />
-    <state width="1142" height="421" key="GridCell.Tab.0.left/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1659347274004" />
-    <state width="1141" height="421" key="GridCell.Tab.0.right" timestamp="1663917744404">
-      <screen x="-1920" y="5" width="1920" height="1040" />
-    </state>
-    <state width="1141" height="421" key="GridCell.Tab.0.right/-1920.5.1920.1040/0.0.1920.1040@-1920.5.1920.1040" timestamp="1663917744404" />
-    <state width="1142" height="421" key="GridCell.Tab.0.right/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1659347274004" />
-    <state x="-1147" y="159" key="SettingsEditor" timestamp="1659342359467">
-      <screen x="-1920" y="5" width="1920" height="1040" />
-    </state>
-    <state x="-1147" y="159" key="SettingsEditor/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1659342359467" />
-    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1659343128435">
+    <state x="92" y="92" width="1736" height="856" key="DiffContextDialog/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1673240588519" />
+    <state width="1877" height="610" key="GridCell.Tab.0.bottom" timestamp="1673240340758">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1659343128435" />
+    <state width="1877" height="610" key="GridCell.Tab.0.bottom/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1673240340758" />
+    <state width="1877" height="610" key="GridCell.Tab.0.center" timestamp="1673240340758">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="610" key="GridCell.Tab.0.center/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1673240340758" />
+    <state width="1877" height="610" key="GridCell.Tab.0.left" timestamp="1673240340758">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="610" key="GridCell.Tab.0.left/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1673240340758" />
+    <state width="1877" height="610" key="GridCell.Tab.0.right" timestamp="1673240340758">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="610" key="GridCell.Tab.0.right/-1920.5.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1673240340758" />
   </component>
 </project>

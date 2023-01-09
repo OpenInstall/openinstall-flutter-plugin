@@ -72,14 +72,12 @@ class OpeninstallFlutterPlugin {
     _channel.setMethodCallHandler(_handleMethod);
     _channel.invokeMethod("registerWakeup");
     if (Platform.isAndroid) {
+      var args = new Map();
+      args["alwaysCallback"] = alwaysCallback;
       if (permission) {
         print("OpenInstallPlugin.initWithPermission 后续版本将移除，请自行进行权限申请");
-        var args = new Map();
-        args["alwaysCallback"] = alwaysCallback;
         _channel.invokeMethod("initWithPermission", args);
       } else {
-        var args = new Map();
-        args["alwaysCallback"] = alwaysCallback;
         _channel.invokeMethod("init", args);
       }
     } else {
@@ -114,10 +112,13 @@ class OpeninstallFlutterPlugin {
     _channel.invokeMethod('reportRegister');
   }
 
-  void reportEffectPoint(String pointId, int pointValue) {
+  void reportEffectPoint(String pointId, int pointValue, [Map<String, String>? extraMap]) {
     var args = new Map();
     args["pointId"] = pointId;
     args["pointValue"] = pointValue;
+    if(extraMap != null){
+      args["extras"] = extraMap;
+    }
     _channel.invokeMethod('reportEffectPoint', args);
   }
 
