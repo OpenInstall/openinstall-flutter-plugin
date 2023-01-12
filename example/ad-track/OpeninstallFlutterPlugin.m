@@ -1,3 +1,5 @@
+#import <UIKit/UIKit.h>
+
 #import "OpeninstallFlutterPlugin.h"
 
 #import "OpenInstallSDK.h"
@@ -87,7 +89,11 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
             {
                 NSDictionary * args = call.arguments;
                 NSNumber * pointValue = (NSNumber *) args[@"pointValue"];
-                [[OpenInstallSDK defaultManager] reportEffectPoint:(NSString *)args[@"pointId"] effectValue:[pointValue longValue]];
+                if ([args.allKeys containsObject:@"extras"]) {
+                    [[OpenInstallSDK defaultManager] reportEffectPoint:(NSString *)args[@"pointId"] effectValue:[pointValue longValue] effectDictionary:(NSDictionary *)args[@"extras"]];
+                }else{
+                    [[OpenInstallSDK defaultManager] reportEffectPoint:(NSString *)args[@"pointId"] effectValue:[pointValue longValue]];
+                }
                 break;
             }
             default:
@@ -182,6 +188,10 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
         NSError *error;
         NSString *token = [AAAttribution attributionTokenWithError:&error];
         [config setValue:token forKey:OP_ASA_Token];
+#ifdef DEBUG
+        [config setValue:@(YES) forKey:OP_ASA_isDev];//该配置请不要带入正式环境中
+#else
+#endif
     }
     //第三方广告平台统计代码
     NSString *idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
@@ -193,6 +203,7 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 #pragma mark - Application Delegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [OpeninstallFlutterPlugin initOpenInstall:self];
+//    [OpeninstallFlutterPlugin setUserActivityAndScheme:launchOptions];
     return YES;
 }
 
@@ -214,6 +225,26 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 {
     [OpeninstallFlutterPlugin continueUserActivity:userActivity];
     return NO;
+}
+
++ (void)setUserActivityAndScheme:(NSDictionary *)launchOptions{
+    if (launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+        NSDictionary *activityDic = [NSDictionary dictionaryWithDictionary:launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]];
+
+        if ([activityDic[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual: NSUserActivityTypeBrowsingWeb]&&activityDic[@"UIApplicationLaunchOptionsUserActivityKey"]) {
+            NSUserActivity *activity = [[NSUserActivity alloc]initWithActivityType:NSUserActivityTypeBrowsingWeb];
+            activity = (NSUserActivity *)activityDic[@"UIApplicationLaunchOptionsUserActivityKey"];
+            [OpeninstallFlutterPlugin continueUserActivity:activity];
+        }
+    }else if (launchOptions[UIApplicationLaunchOptionsURLKey]){
+        NSURL *url = [[NSURL alloc]init];
+        if ([launchOptions[UIApplicationLaunchOptionsURLKey] isKindOfClass:[NSURL class]]) {
+            url = launchOptions[UIApplicationLaunchOptionsURLKey];
+        }else if ([launchOptions[UIApplicationLaunchOptionsURLKey] isKindOfClass:[NSString class]]){
+            url = [NSURL URLWithString:launchOptions[UIApplicationLaunchOptionsURLKey]];
+        }
+        [OpeninstallFlutterPlugin handLinkURL:url];
+    }
 }
 
 @end

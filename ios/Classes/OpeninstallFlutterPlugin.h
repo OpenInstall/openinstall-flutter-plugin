@@ -16,5 +16,8 @@
  */
 + (BOOL)continueUserActivity:(NSUserActivity *) userActivity;
 
+
++ (void)setUserActivityAndScheme:(NSDictionary *)launchOptions;
+
 @end
 
