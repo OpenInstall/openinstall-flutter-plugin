@@ -234,6 +234,20 @@ _openinstallFlutterPlugin.reportRegister();
 _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
 ```
 
+#### 效果点明细统计
+`reportEffectPoint(String pointId, int pointValue, Map<String, String> extraMap)`  
+
+效果点建立在渠道基础之上，主要用来统计终端用户对某些特殊业务的使用效果。调用此接口时，请使用后台创建的 “效果点ID” 作为 pointId  
+
+示例：
+``` dart
+Map<String, String> extraMap = {
+    "key1": "value1",
+    "key2": "value2"
+};
+_openinstallFlutterPlugin.reportEffectPoint("effect_detail", 1, extraMap);
+```
+
 ## 三、导出apk/ipa包并上传
 
 集成完毕后，导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  
