@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  _openinstallFlutterPlugin.install(installHandler);
+                  _openinstallFlutterPlugin.install(installHandler,11);
                 },
                 child: Text('getInstall', style: TextStyle(fontSize: 20)),
               ),

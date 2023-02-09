@@ -3,12 +3,16 @@
 #import "OpeninstallFlutterPlugin.h"
 
 #import "OpenInstallSDK.h"
+#import <AdSupport/AdSupport.h>
+#import <AppTrackingTransparency/AppTrackingTransparency.h>//苹果新隐私政策
+#import <AdServices/AAAttribution.h>//ASA
 
 typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
     OpenInstallSDKMethodInit,
     OpenInstallSDKMethodGetInstallParams,
     OpenInstallSDKMethodReportRegister,
-    OpenInstallSDKMethodReportEffectPoint
+    OpenInstallSDKMethodReportEffectPoint,
+    OpenInstallSDKMethodConfig
 };
 
 @interface OpeninstallFlutterPlugin () <OpenInstallDelegate>
@@ -16,6 +20,12 @@ typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
 @property (strong, nonatomic) FlutterMethodChannel * flutterMethodChannel;
 @property (assign, nonatomic) BOOL isOnWakeup;
 @property (copy, nonatomic)NSDictionary *cacheDic;
+
+@property (assign, nonatomic) BOOL adEnable;//必要，是否开启广告平台统计功能
+@property (assign, nonatomic) BOOL ASAEnable;//必要，是否开启苹果ASA功能
+@property (assign, nonatomic) BOOL ASADebug;//可选，ASA测试debug模式，注意：正式环境中请务必关闭
+@property (copy, nonatomic) NSString *idfaStr;//可选，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
+
 @end
 
 static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
@@ -27,7 +37,6 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     [registrar addApplicationDelegate:instance];
     instance.flutterMethodChannel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
-    [OpenInstallSDK initWithDelegate:instance];
 }
 
 - (instancetype)init {
@@ -43,7 +52,8 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                     @"registerWakeup"         :      @(OpenInstallSDKMethodInit),
                     @"getInstall"             :      @(OpenInstallSDKMethodGetInstallParams),
                     @"reportRegister"         :      @(OpenInstallSDKMethodReportRegister),
-                    @"reportEffectPoint"      :      @(OpenInstallSDKMethodReportEffectPoint)
+                    @"reportEffectPoint"      :      @(OpenInstallSDKMethodReportEffectPoint),
+                    @"config"                 :      @(OpenInstallSDKMethodConfig)
                     };
 }
 
@@ -53,6 +63,8 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
         switch (methodType.intValue) {
             case OpenInstallSDKMethodInit:
             {
+                [self initOpenInstall];
+                
                 NSDictionary *dict;
                 @synchronized(self){
                     if (self.cacheDic) {
@@ -68,9 +80,10 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
             }
             case OpenInstallSDKMethodGetInstallParams:
             {
-                int time = (int) call.arguments[@"timeout"];
-                if (time <= 0) {
-                    time = 8;
+                NSNumber *timeNum = (NSNumber *) call.arguments[@"timeout"];
+                double time = [timeNum doubleValue];
+                if (time <= 10) {
+                    time = 15;
                 }
                 [[OpenInstallSDK defaultManager] getInstallParmsWithTimeoutInterval:time completed:^(OpeninstallData * _Nullable appData) {
                     [self installParamsResponse:appData];
@@ -91,6 +104,16 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                 }else{
                     [[OpenInstallSDK defaultManager] reportEffectPoint:(NSString *)args[@"pointId"] effectValue:[pointValue longValue]];
                 }
+                break;
+            }
+            case OpenInstallSDKMethodConfig:
+            {
+                NSDictionary * args = call.arguments;
+                self.adEnable = [args[@"adEnable"] boolValue];
+                self.ASAEnable = [args[@"ASAEnable"] boolValue];
+                self.idfaStr = args[@"idfaStr"];
+                self.ASADebug = [args[@"ASADebug"] boolValue];
+                
                 break;
             }
             default:
@@ -167,9 +190,61 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     return [OpenInstallSDK continueUserActivity:userActivity];
 }
 
+- (void)initOpenInstall{
+    //iOS14.5苹果隐私政策正式启用
+    if (self.adEnable) {
+        if (@available(iOS 14, *)) {
+            [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
+                [self OpInit];
+            }];
+        }else{
+            [self OpInit];
+        }
+    }else{
+        [self OpInit];
+    }
+    
+}
+
+- (void)OpInit{
+    //ASA广告归因
+    NSMutableDictionary *config = [[NSMutableDictionary alloc]init];
+    if (@available(iOS 14.3, *)) {
+        NSError *error;
+        NSString *token = [AAAttribution attributionTokenWithError:&error];
+        if (self.ASAEnable) {
+            [config setValue:token forKey:OP_ASA_Token];
+        }
+        if (self.ASADebug) {
+            [config setValue:@(YES) forKey:OP_ASA_isDev];
+        }
+    }
+    //第三方广告平台统计代码
+    NSString *idfaStr;
+    if (self.adEnable) {
+        if (self.idfaStr.length > 0) {
+            idfaStr = self.idfaStr;
+        }else{
+            idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+        }
+        [config setValue:idfaStr forKey:OP_Idfa_Id];
+    }
+    
+    if (!self.ASAEnable && !self.adEnable) {
+        [OpenInstallSDK initWithDelegate:self];
+    }else if (!self.ASAEnable && self.adEnable){
+        [OpenInstallSDK initWithDelegate:self advertisingId:idfaStr];
+    }else if (self.ASAEnable && !self.adEnable){
+        [OpenInstallSDK initWithDelegate:self adsAttribution:config];
+    }else if (self.ASAEnable && self.adEnable){
+        [OpenInstallSDK initWithDelegate:self adsAttribution:config];
+    }
+    
+}
+
+
 #pragma mark - Application Delegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [OpenInstallSDK initWithDelegate:self];
     return YES;
 }
 

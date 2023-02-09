@@ -64,6 +64,21 @@ class OpeninstallFlutterPlugin {
     }
   }
 
+    
+    //设置参数并初始化
+    //options可设置参数：
+    //AdPlatformEnable：必要，是否开启广告平台统计功能
+    //ASAEnable：必要，是否开启ASA功能
+    //ASADebug：可选，使用ASA功能时是否开启debug模式,正式环境中请关闭
+    //idfaStr：可选，用户可以自行传入idfa字符串，不传则插件内部会获取，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
+  void configIos(Map options) {
+    if (Platform.isAndroid) {
+      //仅使用于 iOS 平台
+    } else {
+      _channel.invokeMethod("config", options);
+    }
+  }
+
   // wakeupHandler 拉起回调.
   // alwaysCallback 是否总是有回调。当值为true时，只要触发了拉起方法调用，就会有回调
   // permission 初始化时是否申请 READ_PHONE_STATE 权限，已废弃。请用户自行进行权限申请
@@ -81,9 +96,10 @@ class OpeninstallFlutterPlugin {
         _channel.invokeMethod("init", args);
       }
     } else {
-      print("OpenInstallPlugin:插件版本>=1.3.1后，iOS环境下通用链接和scheme拉起的原生代理方法由插件内部来处理，如果出现拉起问题，请参考官方文档处理");
+      print("OpenInstallPlugin:插件版本>=2.3.1后，由于整合了广告和ASA系统，iOS平台将通过用户手动调用init方法初始化SDK，需要广告平台或者ASA统计服务的请在init方法前调用configIos方法配置参数");
     }
   }
+
 
   // SDK内部将会一直保存安装数据，每次调用install方法都会返回值。
   // 如果调用install获取到数据并处理了自己的业务，后续不想再被触发，那么可以自己在业务调用成功时，设置一个标识，不再调用install方法

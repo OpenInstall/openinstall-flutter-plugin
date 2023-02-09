@@ -55,6 +55,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>com.openinstall.APP_KEY</key>
-	<string>wy7kso</string>
+	<string>appkey</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>为了您可以精准获取到优质推荐内容，需要您允许使用该权限</string>
 </dict>
 </plist>

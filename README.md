@@ -248,6 +248,8 @@ Map<String, String> extraMap = {
 _openinstallFlutterPlugin.reportEffectPoint("effect_detail", 1, extraMap);
 ```
 
+备注：效果点明细统计需要原生iOS SDK >=2.6.0，请从CocoaPods拉取、更新、确认版本。
+
 ## 三、导出apk/ipa包并上传
 
 集成完毕后，导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  
@@ -307,22 +309,33 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 ### iOS平台
 
 #### 广告平台渠道和ASA渠道的配置
-1、工程目录下新建plugins文件夹用来存放本地插件，拷贝`openinstall_flutter_plugin`插件到plugins文件夹独自引用
 
-![新建文件夹](https://res.cdn.openinstall.io/doc/flutterForder.png)  
+1、针对广告平台接入，新增配置接口，在调用`init`之前调用。
+``` dart
+    var adConfig = new Map();
+    adConfig["adEnabled"] = true;//必要，开启广告平台渠道
+    adConfig["ASAEnable"] = true;//必要，开启苹果ASA功能
+    //adConfig["idfaStr"] = "";//可选，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
+    //adConfig["ASADebug"] = true;//可选，ASA测试debug模式，注意：正式环境中请务必关闭(不配置或配置为false)
+    _openinstallFlutterPlugin.configIos(adConfig);
+```
 
-2、在工程中找到pubspec.yaml，修改为本地插件引用方式
+可选参数说明：   
 
-![本地插件引用](https://res.cdn.openinstall.io/doc/flutterYaml.png)  
+| 参数名| 参数类型 | 描述 |  要求 |
+| --- | --- | --- | --- |
+| adEnable | bool | 必要，默认为false，是否开启广告平台统计功能 | 无 |
+| idfaStr | string | 可选，默认为空，用户传入的idfa字符串，用于广告平台统计功能 | adEnable为true时才生效，不配置则由插件内部去获取隐私权限和idfa字符串 |
+| ASAEnable | bool | 必要，默认为false，是否开启苹果ASA功能 | 无 |
+| ASADebug | bool | 可选，默认为false，使用ASA功能时是否开启debug模式 | ASAEnable为true时才生效，正式环境中请务必关闭(不配置或配置为false) |
 
-3、将 `ios/Classes/OpeninstallFlutterPlugin.m` 文件替换为 `example/ad-track/OpeninstallFlutterPlugin.m` 文件
+备注：adEnable为false时，插件内部不会去请求隐私权限和idfa字符串，idfaStr配置也会失效；  
+adEnable为true时，如果idfaStr有值且不为空，则使用idfaStr的值，如果未配置idfaStr或为空，则插件内部去获取隐私权限和idfa字符串；  
 
-![文件替换](https://res.cdn.openinstall.io/doc/flutterAdTrack.png)  
-
-4、需要在Info.plist文件中配置权限  
+2、需要在 `ios/Runner/Info.plist` 文件中配置权限  
 ``` xml
 <key>NSUserTrackingUsageDescription</key>
-<string>请允许，以获取和使用您的IDFA</string>
+<string>为了您可以精准获取到优质推荐内容，需要您允许使用该权限</string>
 ```
 
 **备注：** 2021年iOS14.5苹果公司将正式启用idfa新隐私政策，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
