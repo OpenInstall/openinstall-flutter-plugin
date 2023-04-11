@@ -250,6 +250,18 @@ _openinstallFlutterPlugin.reportEffectPoint("effect_detail", 1, extraMap);
 
 备注：效果点明细统计需要原生iOS SDK >=2.6.0，请从CocoaPods拉取、更新、确认版本。
 
+#### 裂变分享上报
+`reportShare(String shareCode, String platform)`  
+
+分享上报主要是统计某个具体用户在某次分享中，分享给了哪个平台，再通过JS端绑定被分享的用户信息，进一步统计到被分享用户的激活回流等情况
+
+示例：
+``` dart
+_openinstallFlutterPlugin.reportShare("123456", "WechatSession")
+    .then((data) => print("reportShare : " + data.toString()));
+```
+可以通过返回的data中的`shouldRetry`决定是否需要重试，以及`message`查看失败的原因
+
 ## 三、导出apk/ipa包并上传
 
 集成完毕后，导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  

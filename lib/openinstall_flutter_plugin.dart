@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-typedef Future<Object> EventHandler(Map<String, Object> data);
+typedef Future EventHandler(Map<String, Object> data);
 
 class OpeninstallFlutterPlugin {
   // 单例
@@ -20,6 +21,7 @@ class OpeninstallFlutterPlugin {
 
   static const MethodChannel _channel = const MethodChannel('openinstall_flutter_plugin');
 
+  // 已废弃
   // 旧版本使用，保留一段时间，防止 npm 自动升级使用最新版本插件出现问题
   void config(bool adEnabled, String? oaid, String? gaid) {
     print("OpenInstallPlugin:config(bool adEnabled, String? oaid, String? gaid) 后续版本将移除，请使用configAndroid(Map options)");
@@ -53,8 +55,11 @@ class OpeninstallFlutterPlugin {
       // 仅使用于 Android 平台
     }
   }
+
+  // 已废弃
   // 关闭SerialNumber读取
   void serialEnabled(bool enabled){
+    print("OpenInstallPlugin:serialEnabled(bool enabled) 后续版本将移除，请使用configAndroid(Map options)");
     if (Platform.isAndroid) {
       var args = new Map();
       args["enabled"] = enabled;
@@ -111,7 +116,7 @@ class OpeninstallFlutterPlugin {
   }
 
   // 只有在用户进入应用后在较短时间内需要返回安装参数，但是又不想影响参数获取精度时使用。
-  // 在retry为true的情况下，后续再次通过install依然可以获取安装数据
+  // 在shouldRetry为true的情况下，后续再次通过install依然可以获取安装数据
   // 通常情况下，请使用 install 方法获取安装参数
   void getInstallCanRetry(EventHandler installHandler, [int seconds = 3]) {
     if (Platform.isAndroid) {
@@ -136,6 +141,14 @@ class OpeninstallFlutterPlugin {
       args["extras"] = extraMap;
     }
     _channel.invokeMethod('reportEffectPoint', args);
+  }
+
+  Future<Map<Object?, Object?>> reportShare(String shareCode, String platform) async {
+    var args = new Map();
+    args["shareCode"] = shareCode;
+    args["platform"] = platform;
+    Map<Object?, Object?> data = await _channel.invokeMethod('reportShare', args);
+    return data;
   }
 
   Future _handleMethod(MethodCall call) async {

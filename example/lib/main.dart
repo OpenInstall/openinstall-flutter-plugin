@@ -48,43 +48,54 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(installLog, style: TextStyle(fontSize: 20)),
-              Text(wakeUpLog, style: TextStyle(fontSize: 20)),
-              const SizedBox(height: 30),
+              Text(installLog, style: TextStyle(fontSize: 18)),
+              Text(wakeUpLog, style: TextStyle(fontSize: 18)),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
-                  _openinstallFlutterPlugin.install(installHandler,11);
+                  _openinstallFlutterPlugin.install(installHandler, 11);
                 },
-                child: Text('getInstall', style: TextStyle(fontSize: 20)),
+                child: Text('getInstall', style: TextStyle(fontSize: 16)),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
                   _openinstallFlutterPlugin.reportRegister();
                 },
                 child: const Text('reportRegister',
-                    style: TextStyle(fontSize: 20)),
+                    style: TextStyle(fontSize: 16)),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
                   _openinstallFlutterPlugin.reportEffectPoint("effect_test", 1);
                 },
                 child: const Text('reportEffectPoint',
-                    style: TextStyle(fontSize: 20)),
+                    style: TextStyle(fontSize: 16)),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
                   Map<String, String> extraMap = {
                     "systemVersion": Platform.operatingSystemVersion,
                     "flutterVersion": Platform.version
                   };
-                  _openinstallFlutterPlugin.reportEffectPoint("effect_detail", 1, extraMap);
+                  _openinstallFlutterPlugin.reportEffectPoint(
+                      "effect_detail", 1, extraMap);
                 },
                 child: const Text('reportEffectDetail',
-                    style: TextStyle(fontSize: 20)),
+                    style: TextStyle(fontSize: 16)),
               ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                  onPressed: () {
+                    _openinstallFlutterPlugin
+                        .reportShare("123456", "WechatSession")
+                        .then((data) =>
+                            print("reportShare : " + data.toString()));
+                  },
+                  child: const Text('reportShare',
+                      style: TextStyle(fontSize: 16))),
             ],
           ),
         ),
@@ -92,21 +103,25 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  Future<Object> installHandler(Map<String, Object> data) async {
+  Future installHandler(Map<String, Object> data) async {
     print("installHandler : " + data.toString());
     setState(() {
-      installLog = "install result : channel=" + data['channelCode'].toString()
-          + ", data=" + data['bindData'].toString() + "\n";
+      installLog = "install result : channel=" +
+          data['channelCode'].toString() +
+          ", data=" +
+          data['bindData'].toString() +
+          "\n";
     });
-    return "";
   }
 
-  Future<Object> wakeupHandler(Map<String, Object> data) async {
+  Future wakeupHandler(Map<String, Object> data) async {
     print("wakeupHandler : " + data.toString());
     setState(() {
-      wakeUpLog = "wakeup result : channel=" + data['channelCode'].toString()
-          + ", data=" + data['bindData'].toString() + "\n";
+      wakeUpLog = "wakeup result : channel=" +
+          data['channelCode'].toString() +
+          ", data=" +
+          data['bindData'].toString() +
+          "\n";
     });
-    return "";
   }
 }
