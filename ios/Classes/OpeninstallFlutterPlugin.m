@@ -12,7 +12,8 @@ typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
     OpenInstallSDKMethodGetInstallParams,
     OpenInstallSDKMethodReportRegister,
     OpenInstallSDKMethodReportEffectPoint,
-    OpenInstallSDKMethodConfig
+    OpenInstallSDKMethodConfig,
+    OpenInstallSDKMethodReportShare
 };
 
 @interface OpeninstallFlutterPlugin () <OpenInstallDelegate>
@@ -53,7 +54,8 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                     @"getInstall"             :      @(OpenInstallSDKMethodGetInstallParams),
                     @"reportRegister"         :      @(OpenInstallSDKMethodReportRegister),
                     @"reportEffectPoint"      :      @(OpenInstallSDKMethodReportEffectPoint),
-                    @"config"                 :      @(OpenInstallSDKMethodConfig)
+                    @"config"                 :      @(OpenInstallSDKMethodConfig),
+                    @"reportShare"            :      @(OpenInstallSDKMethodReportShare)
                     };
 }
 
@@ -116,6 +118,18 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                 
                 break;
             }
+            case OpenInstallSDKMethodReportShare:
+            {
+                NSDictionary * args = call.arguments;
+                [[OpenInstallSDK defaultManager] reportShareParametersWithShareCode:(NSString *)args[@"shareCode"] sharePlatform:(NSString *)args[@"platform"] completed:^(NSInteger code, NSString * _Nullable msg) {
+                    BOOL shouldRetry = NO;
+                    if (code==-1) {
+                        shouldRetry = YES;
+                    }
+                    NSDictionary * resultDic = @{@"shouldRetry":@(shouldRetry),@"message":msg};
+                    result(resultDic);
+                }];
+            }
             default:
             {
                 break;
@@ -153,7 +167,11 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
     if (appData.data != nil) {
         bindData = [self jsonStringWithObject:appData.data];
     }
-    NSDictionary * dict = @{@"channelCode":channelCode, @"bindData":bindData};
+    BOOL shouldRetry = NO;
+    if (appData.opCode==OPCode_timeout) {
+        shouldRetry = YES;
+    }
+    NSDictionary * dict = @{@"channelCode":channelCode,@"bindData":bindData,@"shouldRetry":@(shouldRetry)};
     return dict;
 }
 

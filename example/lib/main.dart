@@ -110,7 +110,8 @@ class _MyAppState extends State<MyApp> {
           data['channelCode'].toString() +
           ", data=" +
           data['bindData'].toString() +
-          "\n";
+          "\n" +
+          data['shouldRetry'].toString();
     });
   }
 

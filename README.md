@@ -208,7 +208,9 @@ Future installHandler(Map<String, dynamic> data) async {
         debugLog = "install result : channel=" +
             data['channelCode'] +
             ", data=" +
-            data['bindData'];
+            data['bindData'] +
+            ", shouldRetry" +
+            data['shouldRetry'];
     });
 }
 

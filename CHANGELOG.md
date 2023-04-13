@@ -2,6 +2,9 @@
 ## 2.4.0
 新增裂变分享统计  
 Android 更新 SDK 到 2.8.0
+iOS 
+getInstall新增返回码shouldRetry，超时返回true
+更新本地pod库使SDK升级到2.7.0
 
 ## 2.3.1
  iOS  
