@@ -120,10 +120,13 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             OpenInstall.getInstall(new AppInstallListener() {
                 @Override
                 public void onInstallFinish(AppData appData, Error error) {
-                    Map<String, String> data = data2Map(appData);
+                    Map<String, Object> data = data2Map(appData);
                     boolean shouldRetry = error!=null && error.shouldRetry();
-                    data.put("shouldRetry", String.valueOf(shouldRetry));
-                    channel.invokeMethod(METHOD_INSTALL_NOTIFICATION,data );
+                    data.put("shouldRetry", shouldRetry);
+                    if(error != null) {
+                        data.put("message", error.getErrorMsg());
+                    }
+                    channel.invokeMethod(METHOD_INSTALL_NOTIFICATION, data);
                 }
             }, seconds == null ? 0 : seconds);
             result.success("OK");
@@ -131,10 +134,9 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             Integer seconds = call.argument("seconds");
             OpenInstall.getInstallCanRetry(new AppInstallRetryAdapter() {
                 @Override
-                public void onInstall(AppData appData, boolean retry) {
-                    Map<String, String> data = data2Map(appData);
-                    data.put("retry", String.valueOf(retry));
-                    data.put("shouldRetry", String.valueOf(retry));  // 以后保存统一
+                public void onInstall(AppData appData, boolean shouldRetry) {
+                    Map<String, Object> data = data2Map(appData);
+                    data.put("shouldRetry", shouldRetry);  // 以后保存统一
                     channel.invokeMethod(METHOD_INSTALL_NOTIFICATION, data);
                 }
             }, seconds == null ? 0 : seconds);
@@ -156,17 +158,17 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         } else if (METHOD_SHARE.equalsIgnoreCase(call.method)) {
             String shareCode = call.argument("shareCode");
             String sharePlatform = call.argument("platform");
-            final Map<String, String> data = new HashMap<>();
+            final Map<String, Object> data = new HashMap<>();
             if(TextUtils.isEmpty(shareCode) || TextUtils.isEmpty(sharePlatform)){
                 data.put("message",  "shareCode or platform is empty");
-                data.put("shouldRetry", String.valueOf(false));
+                data.put("shouldRetry", false);
                 result.success(data);
             }else {
                 OpenInstall.reportShare(shareCode, sharePlatform, new ResultCallback<Void>() {
                     @Override
                     public void onResult(@Nullable Void v, @Nullable Error error) {
                         boolean shouldRetry = error!=null && error.shouldRetry();
-                        data.put("shouldRetry", String.valueOf(shouldRetry));
+                        data.put("shouldRetry", shouldRetry);
                         if(error != null) {
                             data.put("message", error.getErrorMsg());
                         }
@@ -318,8 +320,8 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 }
             };
 
-    private static Map<String, String> data2Map(AppData data) {
-        Map<String, String> result = new HashMap<>();
+    private static Map<String, Object> data2Map(AppData data) {
+        Map<String, Object> result = new HashMap<>();
         if (data != null) {
             result.put("channelCode", data.getChannel());
             result.put("bindData", data.getData());
