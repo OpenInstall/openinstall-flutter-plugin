@@ -55,6 +55,8 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private static final String METHOD_EFFECT_POINT = "reportEffectPoint";
     private static final String METHOD_SHARE = "reportShare";
 
+    private static final String METHOD_OPID = "getOpid";
+
     private static final String METHOD_WAKEUP_NOTIFICATION = "onWakeupNotification";
     private static final String METHOD_INSTALL_NOTIFICATION = "onInstallNotification";
 
@@ -136,6 +138,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 @Override
                 public void onInstall(AppData appData, boolean shouldRetry) {
                     Map<String, Object> data = data2Map(appData);
+                    data.put("retry", String.valueOf(shouldRetry)); // 2.4.0 之前的版本返回
                     data.put("shouldRetry", shouldRetry);  // 以后保存统一
                     channel.invokeMethod(METHOD_INSTALL_NOTIFICATION, data);
                 }
@@ -176,6 +179,9 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                     }
                 });
             }
+        } else if (METHOD_OPID.equalsIgnoreCase(call.method)) {
+            String opid = OpenInstall.getOpid();
+            result.success(opid);
         } else {
             result.notImplemented();
         }

@@ -23,7 +23,7 @@ class OpeninstallFlutterPlugin {
   // 已废弃
   // 旧版本使用，保留一段时间，防止 npm 自动升级使用最新版本插件出现问题
   void config(bool adEnabled, String? oaid, String? gaid) {
-    print("OpenInstallPlugin:config(bool adEnabled, String? oaid, String? gaid) 后续版本将移除，请使用configAndroid(Map options)");
+    print("config(bool adEnabled, String? oaid, String? gaid) 后续版本将移除，请使用configAndroid(Map options)");
     if (Platform.isAndroid) {
       var args = new Map();
       args["adEnabled"] = adEnabled;
@@ -58,7 +58,7 @@ class OpeninstallFlutterPlugin {
   // 已废弃
   // 关闭SerialNumber读取
   void serialEnabled(bool enabled){
-    print("OpenInstallPlugin:serialEnabled(bool enabled) 后续版本将移除，请使用configAndroid(Map options)");
+    print("serialEnabled(bool enabled) 后续版本将移除，请使用configAndroid(Map options)");
     if (Platform.isAndroid) {
       var args = new Map();
       args["enabled"] = enabled;
@@ -94,13 +94,13 @@ class OpeninstallFlutterPlugin {
       var args = new Map();
       args["alwaysCallback"] = alwaysCallback;
       if (permission) {
-        print("OpenInstallPlugin.initWithPermission 后续版本将移除，请自行进行权限申请");
+        print("initWithPermission 后续版本将移除，请自行进行权限申请");
         _channel.invokeMethod("initWithPermission", args);
       } else {
         _channel.invokeMethod("init", args);
       }
     } else {
-      print("OpenInstallPlugin:插件版本>=2.3.1后，由于整合了广告和ASA系统，iOS平台将通过用户手动调用init方法初始化SDK，需要广告平台或者ASA统计服务的请在init方法前调用configIos方法配置参数");
+      print("插件版本>=2.3.1后，由于整合了广告和ASA系统，iOS平台将通过用户手动调用init方法初始化SDK，需要广告平台或者ASA统计服务的请在init方法前调用configIos方法配置参数");
     }
   }
 
@@ -148,6 +148,12 @@ class OpeninstallFlutterPlugin {
     args["platform"] = platform;
     Map<Object?, Object?> data = await _channel.invokeMethod('reportShare', args);
     return data;
+  }
+
+  Future<String?> getOpid() async {
+    print("getOpid 当初始化未完成时，将返回空，请在业务需要时再获取，并且使用时做空判断");
+    String? opid = await _channel.invokeMethod('getOpid');
+    return opid;
   }
 
   Future _handleMethod(MethodCall call) async {
