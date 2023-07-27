@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 
 import com.fm.openinstall.Configuration;
 import com.fm.openinstall.OpenInstall;
-import com.fm.openinstall.listener.AppInstallAdapter;
 import com.fm.openinstall.listener.AppInstallListener;
 import com.fm.openinstall.listener.AppInstallRetryAdapter;
 import com.fm.openinstall.listener.AppWakeUpAdapter;
@@ -20,7 +19,6 @@ import com.fm.openinstall.listener.ResultCallback;
 import com.fm.openinstall.model.AppData;
 import com.fm.openinstall.model.Error;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +54,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private static final String METHOD_SHARE = "reportShare";
 
     private static final String METHOD_OPID = "getOpid";
+    private static final String METHOD_CHANNEL = "setChannel";
 
     private static final String METHOD_WAKEUP_NOTIFICATION = "onWakeupNotification";
     private static final String METHOD_INSTALL_NOTIFICATION = "onInstallNotification";
@@ -123,9 +122,9 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 @Override
                 public void onInstallFinish(AppData appData, Error error) {
                     Map<String, Object> data = data2Map(appData);
-                    boolean shouldRetry = error!=null && error.shouldRetry();
+                    boolean shouldRetry = error != null && error.shouldRetry();
                     data.put("shouldRetry", shouldRetry);
-                    if(error != null) {
+                    if (error != null) {
                         data.put("message", error.getErrorMsg());
                     }
                     channel.invokeMethod(METHOD_INSTALL_NOTIFICATION, data);
@@ -150,10 +149,10 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         } else if (METHOD_EFFECT_POINT.equalsIgnoreCase(call.method)) {
             String pointId = call.argument("pointId");
             Integer pointValue = call.argument("pointValue");
-            if(TextUtils.isEmpty(pointId) || pointValue == null){
+            if (TextUtils.isEmpty(pointId) || pointValue == null) {
                 Log.w(TAG, "pointId is empty or pointValue is null");
 //                result.error("ERROR", "pointId is empty or pointValue is null", null);
-            }else{
+            } else {
                 Map<String, String> extraMap = call.argument("extras");
                 OpenInstall.reportEffectPoint(pointId, pointValue, extraMap);
             }
@@ -162,17 +161,17 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             String shareCode = call.argument("shareCode");
             String sharePlatform = call.argument("platform");
             final Map<String, Object> data = new HashMap<>();
-            if(TextUtils.isEmpty(shareCode) || TextUtils.isEmpty(sharePlatform)){
-                data.put("message",  "shareCode or platform is empty");
+            if (TextUtils.isEmpty(shareCode) || TextUtils.isEmpty(sharePlatform)) {
+                data.put("message", "shareCode or platform is empty");
                 data.put("shouldRetry", false);
                 result.success(data);
-            }else {
+            } else {
                 OpenInstall.reportShare(shareCode, sharePlatform, new ResultCallback<Void>() {
                     @Override
                     public void onResult(@Nullable Void v, @Nullable Error error) {
-                        boolean shouldRetry = error!=null && error.shouldRetry();
+                        boolean shouldRetry = error != null && error.shouldRetry();
                         data.put("shouldRetry", shouldRetry);
-                        if(error != null) {
+                        if (error != null) {
                             data.put("message", error.getErrorMsg());
                         }
                         result.success(data);
@@ -182,6 +181,10 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         } else if (METHOD_OPID.equalsIgnoreCase(call.method)) {
             String opid = OpenInstall.getOpid();
             result.success(opid);
+        } else if (METHOD_CHANNEL.equalsIgnoreCase(call.method)) {
+            String channelCode = call.argument("channelCode");
+            OpenInstall.setChannel(channelCode);
+            result.success("OK");
         } else {
             result.notImplemented();
         }
@@ -211,7 +214,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             String gaid = call.argument("gaid");
             builder.gaid(gaid);
         }
-        if(call.hasArgument("imeiDisabled")){
+        if (call.hasArgument("imeiDisabled")) {
             Boolean imeiDisabled = call.argument("imeiDisabled");
             if (checkBoolean(imeiDisabled)) {
                 builder.imeiDisabled();
@@ -221,7 +224,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             String imei = call.argument("imei");
             builder.imei(imei);
         }
-        if(call.hasArgument("macDisabled")){
+        if (call.hasArgument("macDisabled")) {
             Boolean macDisabled = call.argument("macDisabled");
             if (checkBoolean(macDisabled)) {
                 builder.macDisabled();

@@ -156,6 +156,16 @@ class OpeninstallFlutterPlugin {
     return opid;
   }
 
+  void setChannel(String channelCode) {
+    if (Platform.isAndroid) {
+      var args = new Map();
+      args["channelCode"] = channelCode;
+      _channel.invokeMethod('setChannel', args);
+    } else {
+      // 仅使用于 Android 平台
+    }
+  }
+
   Future _handleMethod(MethodCall call) async {
     print(call.method);
     switch (call.method) {
