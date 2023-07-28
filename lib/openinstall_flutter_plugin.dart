@@ -151,9 +151,14 @@ class OpeninstallFlutterPlugin {
   }
 
   Future<String?> getOpid() async {
-    print("getOpid 当初始化未完成时，将返回空，请在业务需要时再获取，并且使用时做空判断");
-    String? opid = await _channel.invokeMethod('getOpid');
-    return opid;
+    if (Platform.isAndroid) {
+      print("getOpid 当初始化未完成时，将返回空，请在业务需要时再获取，并且使用时做空判断");
+      String? opid = await _channel.invokeMethod('getOpid');
+      return opid;
+    } else {
+      // 仅使用于 Android 平台
+      return "";
+    }
   }
 
   void setChannel(String channelCode) {
