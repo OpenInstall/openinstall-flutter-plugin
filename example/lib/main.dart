@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _openinstallFlutterPlugin = OpeninstallFlutterPlugin();
-
+    // _openinstallFlutterPlugin.setDebug(false);
     _openinstallFlutterPlugin.init(wakeupHandler);
     // 错误：应该在业务需要时再调用 install 获取参数
     // _openinstallFlutterPlugin.install(installHandler);

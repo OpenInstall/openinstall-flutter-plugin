@@ -43,6 +43,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     @Deprecated
     private static final String METHOD_WAKEUP = "registerWakeup";
 
+    private static final String METHOD_DEBUG = "setDebug";
     private static final String METHOD_CONFIG = "config";
     private static final String METHOD_CLIPBOARD_ENABLED = "clipBoardEnabled";
     private static final String METHOD_SERIAL_ENABLED = "serialEnabled";
@@ -52,7 +53,6 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private static final String METHOD_REGISTER = "reportRegister";
     private static final String METHOD_EFFECT_POINT = "reportEffectPoint";
     private static final String METHOD_SHARE = "reportShare";
-
     private static final String METHOD_OPID = "getOpid";
     private static final String METHOD_CHANNEL = "setChannel";
 
@@ -67,6 +67,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private Configuration configuration = null;
 
     private boolean alwaysCallback = false;
+    private boolean debuggable = true;
 
 
     @Override
@@ -74,6 +75,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         flutterPluginBinding = binding;
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "openinstall_flutter_plugin");
         channel.setMethodCallHandler(this);
+        OpenInstall.preInit(flutterPluginBinding.getApplicationContext());
     }
 
     @Override
@@ -92,8 +94,13 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
 
     @Override
     public void onMethodCall(MethodCall call, @NonNull final Result result) {
-        Log.d(TAG, "invoke " + call.method);
-        if (METHOD_CONFIG.equalsIgnoreCase(call.method)) {
+        debugLog("invoke " + call.method);
+        if (METHOD_DEBUG.equalsIgnoreCase(call.method)) {
+            Boolean enabled = call.argument("enabled");
+            debuggable = enabled == null ? true : enabled;
+            OpenInstall.setDebug(debuggable);
+            result.success("OK");
+        } else if (METHOD_CONFIG.equalsIgnoreCase(call.method)) {
             config(call);
             result.success("OK");
         } else if (METHOD_CLIPBOARD_ENABLED.equalsIgnoreCase(call.method)) {
@@ -236,7 +243,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         }
 
         configuration = builder.build();
-//        Log.d(TAG, String.format("Configuration: adEnabled=%s, oaid=%s, gaid=%s, macDisabled=%s, imeiDisabled=%s, "
+//        debugLog(String.format("Configuration: adEnabled=%s, oaid=%s, gaid=%s, macDisabled=%s, imeiDisabled=%s, "
 //                        + "androidId=%s, serialNumber=%s, imei=%s, mac=%s",
 //                configuration.isAdEnabled(), configuration.getOaid(), configuration.getGaid(),
 //                configuration.isMacDisabled(), configuration.isImeiDisabled(),
@@ -252,42 +259,34 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
 
     private void init() {
         Context context = flutterPluginBinding.getApplicationContext();
-        if (context != null) {
-            OpenInstall.init(context, configuration);
-            initialized = true;
-            if (intentHolder != null) {
-                wakeup(intentHolder);
-                intentHolder = null;
-            }
-        } else {
-            Log.d(TAG, "Context is null, can't init");
+        OpenInstall.init(context, configuration);
+        initialized = true;
+        if (intentHolder != null) {
+            wakeup(intentHolder);
+            intentHolder = null;
         }
     }
 
     @Deprecated
     private void initWithPermission() {
         Activity activity = activityPluginBinding.getActivity();
-        if (activity == null) {
-            Log.d(TAG, "Activity is null, can't initWithPermission, replace with init");
-            init();
-        } else {
-            activityPluginBinding.addRequestPermissionsResultListener(permissionsResultListener);
-            OpenInstall.initWithPermission(activity, configuration, new Runnable() {
-                @Override
-                public void run() {
-                    activityPluginBinding.removeRequestPermissionsResultListener(permissionsResultListener);
-                    initialized = true;
-                    if (intentHolder != null) {
-                        wakeup(intentHolder);
-                        intentHolder = null;
-                    }
+        activityPluginBinding.addRequestPermissionsResultListener(permissionsResultListener);
+        OpenInstall.initWithPermission(activity, configuration, new Runnable() {
+            @Override
+            public void run() {
+                activityPluginBinding.removeRequestPermissionsResultListener(permissionsResultListener);
+                initialized = true;
+                if (intentHolder != null) {
+                    wakeup(intentHolder);
+                    intentHolder = null;
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
     public boolean onNewIntent(Intent intent) {
+        debugLog("onNewIntent");
         wakeup(intent);
         return false;
     }
@@ -295,13 +294,13 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
 
     private void wakeup(Intent intent) {
         if (initialized) {
-            Log.d(TAG, "getWakeUp : alwaysCallback=" + alwaysCallback);
+            debugLog("getWakeUp : alwaysCallback=" + alwaysCallback);
             if (alwaysCallback) {
                 OpenInstall.getWakeUpAlwaysCallback(intent, new AppWakeUpListener() {
                     @Override
                     public void onWakeUpFinish(AppData appData, Error error) {
                         if (error != null) { // 可忽略，仅调试使用
-                            Log.d(TAG, "getWakeUpAlwaysCallback : " + error.getErrorMsg());
+                            debugLog("getWakeUpAlwaysCallback : " + error.getErrorMsg());
                         }
                         channel.invokeMethod(METHOD_WAKEUP_NOTIFICATION, data2Map(appData));
                     }
@@ -336,6 +335,12 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             result.put("bindData", data.getData());
         }
         return result;
+    }
+
+    private void debugLog(String message) {
+        if (debuggable) {
+            Log.d(TAG, message);
+        }
     }
 
     @Override

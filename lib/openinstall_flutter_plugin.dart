@@ -35,6 +35,16 @@ class OpeninstallFlutterPlugin {
     }
   }
 
+  void setDebug(bool enabled){
+    if (Platform.isAndroid) {
+      var args = new Map();
+      args["enabled"] = enabled;
+      _channel.invokeMethod('setDebug', args);
+    } else {
+      // 仅使用于 Android 平台
+    }
+  }
+
   // 广告平台配置，请参考文档
   void configAndroid(Map options) {
     if (Platform.isAndroid) {
