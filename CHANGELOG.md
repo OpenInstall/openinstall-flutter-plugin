@@ -1,3 +1,5 @@
+## 2.4.2
+Android 更新 SDK 到 2.8.2
 
 ## 2.4.1
 Android 更新 SDK 到 2.8.1   
