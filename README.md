@@ -18,7 +18,7 @@ android: {
   ....
   defaultConfig {
     ...
-    manifestPlaceholders = [
+    manifestPlaceholders += [
         OPENINSTALL_APPKEY : "openinstall为应用分配的appkey",
     ]
   }    
