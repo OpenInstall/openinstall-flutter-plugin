@@ -30,9 +30,10 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _openinstallFlutterPlugin = OpeninstallFlutterPlugin();
-
+    // _openinstallFlutterPlugin.setDebug(false);
     _openinstallFlutterPlugin.init(wakeupHandler);
-    _openinstallFlutterPlugin.install(installHandler);
+    // 错误：应该在业务需要时再调用 install 获取参数
+    // _openinstallFlutterPlugin.install(installHandler);
 
     setState(() {});
   }
@@ -53,7 +54,7 @@ class _MyAppState extends State<MyApp> {
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
-                  _openinstallFlutterPlugin.install(installHandler, 11);
+                  _openinstallFlutterPlugin.install(installHandler, 10);
                 },
                 child: Text('getInstall', style: TextStyle(fontSize: 16)),
               ),
@@ -113,6 +114,7 @@ class _MyAppState extends State<MyApp> {
           "\n" +
           data['shouldRetry'].toString();
     });
+
   }
 
   Future wakeupHandler(Map<String, Object> data) async {

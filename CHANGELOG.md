@@ -1,10 +1,15 @@
+## 2.4.2
+Android 更新 SDK 到 2.8.2
+
+## 2.4.1
+Android 更新 SDK 到 2.8.1   
+iOS 更新本地pod库使SDK升级到2.8.0
 
 ## 2.4.0
 新增裂变分享统计  
-Android 更新 SDK 到 2.8.0
-iOS 
-getInstall新增返回码shouldRetry，超时返回true
-更新本地pod库使SDK升级到2.7.0
+getInstall新增返回码shouldRetry，超时返回true  
+Android 更新 SDK 到 2.8.0   
+iOS 更新本地pod库使SDK升级到2.7.0
 
 ## 2.3.1
  iOS  
@@ -15,15 +20,15 @@ getInstall新增返回码shouldRetry，超时返回true
 
 ## 2.3.0
 新增效果点明细API  
-Android 更新 SDK 到 2.7.0
+Android 更新 SDK 到 2.7.0   
 iOS端插件升级后，需要从cocoapod同步升级原生SDK到2.6.0以上
 
 ## 2.2.3
 Android 更新 SDK 到 2.6.4
 
 ## 2.2.2
-Android 更新 SDK 到 2.6.3
-iOS 更新 SDK 到 2.5.5
+Android 更新 SDK 到 2.6.3   
+iOS 更新 SDK 到 2.5.5   
 将 dynamic 替换为 Object
 
 ## 2.2.1

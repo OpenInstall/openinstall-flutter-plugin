@@ -18,7 +18,7 @@ android: {
   ....
   defaultConfig {
     ...
-    manifestPlaceholders = [
+    manifestPlaceholders += [
         OPENINSTALL_APPKEY : "openinstall为应用分配的appkey",
     ]
   }    
@@ -184,7 +184,7 @@ swift代码：
 
 示例：
 ``` dart
-Future wakeupHandler(Map<String, dynamic> data) async {
+Future wakeupHandler(Map<String, Object> data) async {
     setState(() {
         debugLog = "wakeup result : channel=" +
             data['channelCode'] +
@@ -203,7 +203,7 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 示例：
 ``` dart
 
-Future installHandler(Map<String, dynamic> data) async {
+Future installHandler(Map<String, Object> data) async {
     setState(() {
         debugLog = "install result : channel=" +
             data['channelCode'] +
