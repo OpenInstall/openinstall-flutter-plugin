@@ -327,7 +327,7 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 1、针对广告平台接入，新增配置接口，在调用`init`之前调用。
 ``` dart
     var adConfig = new Map();
-    adConfig["adEnabled"] = true;//必要，开启广告平台渠道
+    adConfig["adEnable"] = true;//必要，开启广告平台渠道
     adConfig["ASAEnable"] = true;//必要，开启苹果ASA功能
     //adConfig["idfaStr"] = "";//可选，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
     //adConfig["ASADebug"] = true;//可选，ASA测试debug模式，注意：正式环境中请务必关闭(不配置或配置为false)
@@ -351,6 +351,8 @@ adEnable为true时，如果idfaStr有值且不为空，则使用idfaStr的值，
 <key>NSUserTrackingUsageDescription</key>
 <string>为了您可以精准获取到优质推荐内容，需要您允许使用该权限</string>
 ```
+
+**注意：**广告平台统计里面，如果出现权限弹窗无法正常弹出的情况，考虑把configIos和init方法放在 App生命周期的“应用进入前台resumed” 的时候调用。
 
 **备注：** 2021年iOS14.5苹果公司将正式启用idfa新隐私政策，详情可参考：[广告平台对接iOS集成指引](https://www.openinstall.io/doc/ad_ios.html)
 
