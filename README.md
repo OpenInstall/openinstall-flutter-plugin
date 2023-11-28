@@ -5,7 +5,33 @@ openinstall插件封装了openinstall平台原生SDK，集成了 **渠道统计,
 使用openinstall可实现以下多种场景：  
 ![实现场景](https://res.cdn.openinstall.io/doc/scene.jpg)  
 
-## 一、配置
+## 一、安装
+
+### 1. 添加依赖
+在项目的 `pubspec.yaml` 文件中添加以下内容:
+
+``` json 
+dependencies:
+  openinstall_flutter_plugin: ^2.1.2
+```
+
+### 2. 安装插件
+使用命令行获取
+
+``` shell
+$ flutter pub get
+```
+
+或者使用开发工具的 `flutter pub get`
+
+### 3. 导入
+在 `Dart` 代码中使用以下代码导入:
+
+``` dart
+import 'package:openinstall_flutter_plugin/openinstall_flutter_plugin.dart';
+```
+
+## 二、配置
 前往 [openinstall控制台](https://developer.openinstall.io/) 创建应用并获取 openinstall 为应用分配的` appkey` 和 `scheme` 以及 iOS的关联域名（Associated Domains）  
 ![appkey和scheme](https://res.cdn.openinstall.io/doc/ios-appkey.png)
 
@@ -83,43 +109,8 @@ Xcode中快速添加：
 ![添加associatedDomains](https://res.cdn.openinstall.io/doc/ios-associated-domains.png)
 
 **注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**  
-1） 1.3.1之前版本升级后可不做任何改动  
-2）首次集成插件的用户，如果拉起无法获取到参数，是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以有两种方法解决：  
-- 第一种方法，提早加载openinstall插件，无效的话使用第二种方法  
-- 第二种方法，将所有插件的拉起代理方法的逻辑，统一在AppDelegate文件中来处理，代码如下：  
 
-在头部引入
-``` objc
-//如果是swift，请在桥接文件（一般命名为XXX-Bridging-Header.h）中引入
-#import <openinstall_flutter_plugin/OpeninstallFlutterPlugin.h>
-
-```
-添加如下方法  
-``` objc
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler{
-    //处理通过openinstall一键唤起App时传递的数据
-    [OpeninstallFlutterPlugin continueUserActivity:userActivity];
-    //其他第三方回调:
-    return YES;
-}
-```
-swift代码：  
-``` swift
-//swift4.2之前版本
-func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool{
-    //处理通过openinstall一键唤起App时传递的数据
-    OpeninstallFlutterPlugin.continue(userActivity)
-    //其他第三方回调:
-    return true
-}
-//swift4.2版本开始，系统方法修改为：
-func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool{
-    //处理通过openinstall一键唤起App时传递的数据
-    OpeninstallFlutterPlugin.continue(userActivity)
-    //其他第三方回调:
-    return true
-}
-```
+如果拉起无法获取到参数，可能是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以修改其它插件通用链接delegate回调`..userActivity..`方法`return NO;`来解决，可参考OpeninstallFlutterPlugin.m文件相关内容。  
 
 ##### scheme 配置
 添加应用对应的 scheme，可在工程“TARGETS -> Info -> URL Types” 里快速添加，图文请看
@@ -127,55 +118,10 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 ![scheme配置](https://res.cdn.openinstall.io/doc/ios-scheme.png)
 
 **注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**  
-1） 1.3.1之前版本升级后可不做任何改动  
-2）首次集成插件的用户，如果拉起无法获取到参数，是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以有两种方法解决：  
-- 第一种方法，提早加载openinstall插件，无效的话使用第二种方法  
-- 第二种方法，将所有插件的拉起代理方法的逻辑，统一在AppDelegate文件中来处理，代码如下：  
 
-在 `ios/Runner/AppDelegate.m` 中头部引入：
-``` objc
-//如果是swift，请在桥接文件（一般命名为XXX-Bridging-Header.h）中引入
-#import <openinstall_flutter_plugin/OpeninstallFlutterPlugin.h>
-```
+如果拉起无法获取到参数，可能是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以修改其它插件通用链接delegate回调`..hanldeOpenURL..`方法`return NO;`来解决，可参考OpeninstallFlutterPlugin.m文件相关内容。 
 
-在 `ios/Runner/AppDelegate.m` 中添加方法：  
-
-``` objc
-//适用目前所有iOS版本
--(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
-    //判断是否通过OpenInstall URL Scheme 唤起App
-    [OpeninstallFlutterPlugin handLinkURL:url];
-    //其他第三方回调；
-    return YES;
-}
-
-//iOS9以上，会优先走这个方法
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(nonnull NSDictionary *)options{
-    //判断是否通过OpenInstall URL Scheme 唤起App
-    [OpeninstallFlutterPlugin handLinkURL:url];
-    //其他第三方回调；
-     return YES;
-}
-```
-
-swift代码：  
-``` swift
-//swift引用OC方法时，最好根据系统代码提示来写
-//适用目前所有iOS版本
-    func application(_ application: UIApplication, handleOpen url: URL) -> Bool {
-        OpeninstallFlutterPlugin.handLinkURL(url)
-        return true
-    }
-//iOS9以上，会优先走这个方法
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        OpeninstallFlutterPlugin.handLinkURL(url)
-        return true
-    }
-//注意，swift4.2版本开始，系统方法修改为：
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool{}
-```
-
-## 二、使用
+## 三、使用
 
 ### 初始化
 `init(EventHandler wakeupHandler)`
@@ -264,7 +210,7 @@ _openinstallFlutterPlugin.reportShare("123456", "WechatSession")
 ```
 可以通过返回的data中的`shouldRetry`决定是否需要重试，以及`message`查看失败的原因
 
-## 三、导出apk/ipa包并上传
+## 四、导出apk/ipa包并上传
 
 集成完毕后，导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  
 ![上传ipa安装包](https://res.cdn.openinstall.io/doc/upload-ipa-jump.png)
@@ -276,7 +222,7 @@ _openinstallFlutterPlugin.reportShare("123456", "WechatSession")
 
 ---
 
-## 广告接入补充文档
+## 五、广告接入补充文档
 
 ### Android平台
 1、针对广告平台接入，新增配置接口，在调用 `init` 之前调用。参考 [广告平台对接Android集成指引](https://www.openinstall.io/doc/ad_android.html)  
