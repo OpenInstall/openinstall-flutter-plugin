@@ -37,16 +37,12 @@ import io.flutter.plugin.common.PluginRegistry;
 public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.NewIntentListener {
 
     private static final String TAG = "OpenInstallPlugin";
-
-    @Deprecated
-    private static final String METHOD_INIT_PERMISSION = "initWithPermission";
     @Deprecated
     private static final String METHOD_WAKEUP = "registerWakeup";
 
     private static final String METHOD_DEBUG = "setDebug";
     private static final String METHOD_CONFIG = "config";
     private static final String METHOD_CLIPBOARD_ENABLED = "clipBoardEnabled";
-    private static final String METHOD_SERIAL_ENABLED = "serialEnabled";
     private static final String METHOD_INIT = "init";
     private static final String METHOD_INSTALL_RETRY = "getInstallCanRetry";
     private static final String METHOD_INSTALL = "getInstall";
@@ -107,21 +103,13 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             Boolean enabled = call.argument("enabled");
             OpenInstall.clipBoardEnabled(enabled == null ? true : enabled);
             result.success("OK");
-        } else if (METHOD_SERIAL_ENABLED.equalsIgnoreCase(call.method)) {
-            Boolean enabled = call.argument("enabled");
-            OpenInstall.serialEnabled(enabled == null ? true : enabled);
-            result.success("OK");
         } else if (METHOD_INIT.equalsIgnoreCase(call.method)) {
             Boolean box = call.argument("alwaysCallback");
             alwaysCallback = box == null ? false : box;
             init();
             result.success("OK");
-        } else if (METHOD_INIT_PERMISSION.equalsIgnoreCase(call.method)) {
-            Boolean box = call.argument("alwaysCallback");
-            alwaysCallback = box == null ? false : box;
-            initWithPermission();
-            result.success("OK");
         } else if (METHOD_WAKEUP.equalsIgnoreCase(call.method)) {
+            // iOS 使用此接口初始化，继续保留
             result.success("OK");
         } else if (METHOD_INSTALL.equalsIgnoreCase(call.method)) {
             Integer seconds = call.argument("seconds");
@@ -267,23 +255,6 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         }
     }
 
-    @Deprecated
-    private void initWithPermission() {
-        Activity activity = activityPluginBinding.getActivity();
-        activityPluginBinding.addRequestPermissionsResultListener(permissionsResultListener);
-        OpenInstall.initWithPermission(activity, configuration, new Runnable() {
-            @Override
-            public void run() {
-                activityPluginBinding.removeRequestPermissionsResultListener(permissionsResultListener);
-                initialized = true;
-                if (intentHolder != null) {
-                    wakeup(intentHolder);
-                    intentHolder = null;
-                }
-            }
-        });
-    }
-
     @Override
     public boolean onNewIntent(Intent intent) {
         debugLog("onNewIntent");
@@ -317,16 +288,6 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             intentHolder = intent;
         }
     }
-
-    @Deprecated
-    private final PluginRegistry.RequestPermissionsResultListener permissionsResultListener =
-            new PluginRegistry.RequestPermissionsResultListener() {
-                @Override
-                public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-                    OpenInstall.onRequestPermissionsResult(requestCode, permissions, grantResults);
-                    return false;
-                }
-            };
 
     private static Map<String, Object> data2Map(AppData data) {
         Map<String, Object> result = new HashMap<>();

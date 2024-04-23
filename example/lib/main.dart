@@ -107,24 +107,17 @@ class _MyAppState extends State<MyApp> {
   Future installHandler(Map<String, Object> data) async {
     print("installHandler : " + data.toString());
     setState(() {
-      installLog = "install result : channel=" +
-          data['channelCode'].toString() +
-          ", data=" +
-          data['bindData'].toString() +
-          "\n" +
-          data['shouldRetry'].toString();
+      installLog = "install result : channel=" + data['channelCode'].toString()
+          + ", data=" + data['bindData'].toString()
+          + ", shouldRetry=" + data['shouldRetry'].toString() + "\n";
     });
-
   }
 
   Future wakeupHandler(Map<String, Object> data) async {
     print("wakeupHandler : " + data.toString());
     setState(() {
-      wakeUpLog = "wakeup result : channel=" +
-          data['channelCode'].toString() +
-          ", data=" +
-          data['bindData'].toString() +
-          "\n";
+      wakeUpLog = "wakeup result : channel=" + data['channelCode'].toString()
+          + ", data=" + data['bindData'].toString() + "\n";
     });
   }
 }

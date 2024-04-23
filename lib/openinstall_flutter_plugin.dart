@@ -20,22 +20,7 @@ class OpeninstallFlutterPlugin {
 
   static const MethodChannel _channel = const MethodChannel('openinstall_flutter_plugin');
 
-  // 已废弃
-  // 旧版本使用，保留一段时间，防止 npm 自动升级使用最新版本插件出现问题
-  void config(bool adEnabled, String? oaid, String? gaid) {
-    print("config(bool adEnabled, String? oaid, String? gaid) 后续版本将移除，请使用configAndroid(Map options)");
-    if (Platform.isAndroid) {
-      var args = new Map();
-      args["adEnabled"] = adEnabled;
-      args["oaid"] = oaid;
-      args['gaid'] = gaid;
-      _channel.invokeMethod('config', args);
-    } else {
-      // 仅使用于 Android 平台
-    }
-  }
-
-  void setDebug(bool enabled){
+  void setDebug(bool enabled) {
     if (Platform.isAndroid) {
       var args = new Map();
       args["enabled"] = enabled;
@@ -55,7 +40,7 @@ class OpeninstallFlutterPlugin {
   }
 
   // 关闭剪切板读取
-  void clipBoardEnabled(bool enabled){
+  void clipBoardEnabled(bool enabled) {
     if (Platform.isAndroid) {
       var args = new Map();
       args["enabled"] = enabled;
@@ -65,26 +50,12 @@ class OpeninstallFlutterPlugin {
     }
   }
 
-  // 已废弃
-  // 关闭SerialNumber读取
-  void serialEnabled(bool enabled){
-    print("serialEnabled(bool enabled) 后续版本将移除，请使用configAndroid(Map options)");
-    if (Platform.isAndroid) {
-      var args = new Map();
-      args["enabled"] = enabled;
-      _channel.invokeMethod('serialEnabled', args);
-    } else {
-      // 仅使用于 Android 平台
-    }
-  }
-
-    
-    //设置参数并初始化
-    //options可设置参数：
-    //AdPlatformEnable：必要，是否开启广告平台统计功能
-    //ASAEnable：必要，是否开启ASA功能
-    //ASADebug：可选，使用ASA功能时是否开启debug模式,正式环境中请关闭
-    //idfaStr：可选，用户可以自行传入idfa字符串，不传则插件内部会获取，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
+  //设置参数并初始化
+  //options可设置参数：
+  //AdPlatformEnable：必要，是否开启广告平台统计功能
+  //ASAEnable：必要，是否开启ASA功能
+  //ASADebug：可选，使用ASA功能时是否开启debug模式,正式环境中请关闭
+  //idfaStr：可选，用户可以自行传入idfa字符串，不传则插件内部会获取，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
   void configIos(Map options) {
     if (Platform.isAndroid) {
       //仅使用于 iOS 平台
@@ -96,24 +67,18 @@ class OpeninstallFlutterPlugin {
   // wakeupHandler 拉起回调.
   // alwaysCallback 是否总是有回调。当值为true时，只要触发了拉起方法调用，就会有回调
   // permission 初始化时是否申请 READ_PHONE_STATE 权限，已废弃。请用户自行进行权限申请
-  void init(EventHandler wakeupHandler, {bool alwaysCallback = false, bool permission = false}) {
+  void init(EventHandler wakeupHandler, [bool alwaysCallback = false]) {
     _wakeupHandler = wakeupHandler;
     _channel.setMethodCallHandler(_handleMethod);
     _channel.invokeMethod("registerWakeup");
     if (Platform.isAndroid) {
       var args = new Map();
       args["alwaysCallback"] = alwaysCallback;
-      if (permission) {
-        print("initWithPermission 后续版本将移除，请自行进行权限申请");
-        _channel.invokeMethod("initWithPermission", args);
-      } else {
-        _channel.invokeMethod("init", args);
-      }
+      _channel.invokeMethod("init", args);
     } else {
       print("插件版本>=2.3.1后，由于整合了广告和ASA系统，iOS平台将通过用户手动调用init方法初始化SDK，需要广告平台或者ASA统计服务的请在init方法前调用configIos方法配置参数");
     }
   }
-
 
   // SDK内部将会一直保存安装数据，每次调用install方法都会返回值。
   // 如果调用install获取到数据并处理了自己的业务，后续不想再被触发，那么可以自己在业务调用成功时，设置一个标识，不再调用install方法
@@ -146,7 +111,7 @@ class OpeninstallFlutterPlugin {
     var args = new Map();
     args["pointId"] = pointId;
     args["pointValue"] = pointValue;
-    if(extraMap != null){
+    if (extraMap != null) {
       args["extras"] = extraMap;
     }
     _channel.invokeMethod('reportEffectPoint', args);
