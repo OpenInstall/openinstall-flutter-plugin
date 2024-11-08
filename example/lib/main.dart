@@ -39,6 +39,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void activate() {
+    // TODO: implement activate
+    super.activate();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
