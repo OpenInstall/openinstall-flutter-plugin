@@ -13,7 +13,8 @@ typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
     OpenInstallSDKMethodReportRegister,
     OpenInstallSDKMethodReportEffectPoint,
     OpenInstallSDKMethodConfig,
-    OpenInstallSDKMethodReportShare
+    OpenInstallSDKMethodReportShare,
+    OpenInstallSDKMethodGetOpid
 };
 
 @interface OpeninstallFlutterPlugin () <OpenInstallDelegate>
@@ -55,7 +56,8 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                     @"reportRegister"         :      @(OpenInstallSDKMethodReportRegister),
                     @"reportEffectPoint"      :      @(OpenInstallSDKMethodReportEffectPoint),
                     @"config"                 :      @(OpenInstallSDKMethodConfig),
-                    @"reportShare"            :      @(OpenInstallSDKMethodReportShare)
+                    @"reportShare"            :      @(OpenInstallSDKMethodReportShare),
+                    @"getOpid"                :      @(OpenInstallSDKMethodGetOpid)
                     };
 }
 
@@ -129,6 +131,11 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                     NSDictionary * resultDic = @{@"shouldRetry":@(shouldRetry),@"message":msg};
                     result(resultDic);
                 }];
+            }
+            case OpenInstallSDKMethodGetOpid:
+            {
+                NSString *opid = [[OpenInstallSDK defaultManager] getOpId];
+                result(opid);
             }
             default:
             {
