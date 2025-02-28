@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 typedef Future EventHandler(Map<String, Object> data);
@@ -19,6 +20,10 @@ class OpeninstallFlutterPlugin {
   late EventHandler _installHandler;
 
   static const MethodChannel _channel = const MethodChannel('openinstall_flutter_plugin');
+
+  bool isOhos() {
+    return defaultTargetPlatform == TargetPlatform.ohos;
+  }
 
   void setDebug(bool enabled) {
     if (Platform.isAndroid) {
@@ -57,7 +62,7 @@ class OpeninstallFlutterPlugin {
   //ASADebug：可选，使用ASA功能时是否开启debug模式,正式环境中请关闭
   //idfaStr：可选，用户可以自行传入idfa字符串，不传则插件内部会获取，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
   void configIos(Map options) {
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || isOhos()) {
       //仅使用于 iOS 平台
     } else {
       _channel.invokeMethod("config", options);
@@ -75,6 +80,8 @@ class OpeninstallFlutterPlugin {
       var args = new Map();
       args["alwaysCallback"] = alwaysCallback;
       _channel.invokeMethod("init", args);
+    } else if (isOhos()){
+      _channel.invokeMethod("init");
     } else {
       print("插件版本>=2.3.1后，由于整合了广告和ASA系统，iOS平台将通过用户手动调用init方法初始化SDK，需要广告平台或者ASA统计服务的请在init方法前调用configIos方法配置参数");
     }
@@ -127,13 +134,8 @@ class OpeninstallFlutterPlugin {
 
   Future<String?> getOpid() async {
     print("getOpid 当初始化未完成时，将返回空，请在业务需要时再获取，并且使用时做空判断");
-    if (Platform.isAndroid) {
-      String? opid = await _channel.invokeMethod('getOpid');
-      return opid;
-    } else {
-      String? opid = await _channel.invokeMethod('getOpid');
-      return opid;
-    }
+    String? opid = await _channel.invokeMethod('getOpid');
+    return opid;
   }
 
   void setChannel(String channelCode) {

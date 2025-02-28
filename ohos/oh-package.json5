@@ -1,0 +1,12 @@
+{
+  "name": "openinstall_flutter_plugin",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@ohos/flutter_ohos": "file:./har/flutter.har",
+    "@openinstall/sdk": "file:./har/openinstall_v2.2.0.har"
+  }
+}

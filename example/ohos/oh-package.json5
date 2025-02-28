@@ -1,0 +1,21 @@
+{
+  "modelVersion": "5.0.0",
+  "name": "openinstall_flutter_plugin_example",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "@ohos/flutter_ohos": "file:./har/flutter.har",
+    "openinstall_flutter_plugin": "file:../../ohos"
+  },
+  "devDependencies": {
+    "@ohos/hypium": "1.0.6"
+  },
+  "overrides": {
+    "@ohos/flutter_ohos": "file:./har/flutter.har",
+    "openinstall_flutter_plugin": "file:./har/openinstall_flutter_plugin.har",
+    "@ohos/flutter_module": "file:./entry"
+  }
+}

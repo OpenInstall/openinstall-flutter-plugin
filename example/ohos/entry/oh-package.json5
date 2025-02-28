@@ -1,0 +1,11 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "openinstall_flutter_plugin": "file:../har/openinstall_flutter_plugin.har"
+  }
+}

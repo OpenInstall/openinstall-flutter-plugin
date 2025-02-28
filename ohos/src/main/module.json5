@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "openinstall_flutter_plugin",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}
