@@ -10,9 +10,17 @@ openinstall插件封装了openinstall平台原生SDK，集成了 **渠道统计,
 ### 1. 添加依赖
 在项目的 `pubspec.yaml` 文件中添加以下内容:
 
-``` json 
+``` yml 
 dependencies:
   openinstall_flutter_plugin: ^2.5.2
+```
+
+使用**鸿蒙平台**需要将仓库下载下来，放到flutter工程同一目录。在项目的 `pubspec.yaml` 文件中添加依赖:
+
+``` yml 
+dependencies:
+  openinstall_flutter_plugin:
+    path: ../openinstall_flutter_plugin/
 ```
 
 ### 2. 安装插件
@@ -120,6 +128,153 @@ Xcode中快速添加：
 **注意：插件版本>=1.3.1开始，iOS通用链接原生代码已在插件内部完成**  
 
 如果拉起无法获取到参数，可能是因为方法被其它插件覆盖导致（openinstall插件不会覆盖其它插件），可以修改其它插件通用链接delegate回调`..hanldeOpenURL..`方法`return NO;`来解决，可参考OpeninstallFlutterPlugin.m文件相关内容。 
+
+### Harmony 平台配置
+
+#### 配置 appkey
+在 `ohos\entry\src\main\module.json5` 中添加 appkey 和需要的权限
+``` json
+{
+  "module": {
+    // ...
+    "metadata": [
+      {
+        "name": "com.openinstall.APP_KEY",
+        "value": "openinstall为应用生成的appkey",
+      }
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      },
+      {
+        "name": "ohos.permission.GET_WIFI_INFO"
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO"
+      },
+      {
+        "name": "ohos.permission.STORE_PERSISTENT_DATA"
+      }
+    ],
+  }
+}
+```
+
+#### 配置 scheme 
+在 `ohos\entry\src\main\module.json5` 文件中，在需要打开的`Ability`中配置 scheme，用于浏览器中跳转到应用 
+
+``` json
+{
+  "module": {
+    // ...
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        // ...
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          },
+          // setting scheme start
+          {
+            "entities": [
+              "entity.system.default",
+              "entity.system.browsable"
+            ],
+            "actions": [
+              "ohos.want.action.viewData",
+            ],
+            "uris": [
+              {
+                "scheme": "openinstall为应用生成的scheme",
+              }
+            ]
+          }
+          // setting scheme end
+        ]
+      },
+      // ...
+    ],
+  }
+}
+```
+
+#### 配置 App Linking
+1、登录 AppGallery Connect，点击“我的项目”，在项目列表中点击您的项目；  
+2、在左侧导航栏中选择 __增长 > App Linking__ ，选择 __应用链接（API>=12 适用）__ 页签，点击“创建”；  
+3、填写 openinstall 为应用生成的用于HarmonyOS应用关联的网址域名，设置完成后点击“发布”；  
+4、在应用的 `module.json5`文件中进行如下配置，以声明应用关联的域名地址，并开启域名校验开关。  
+``` json
+{
+  "module": {
+    //...
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        //...
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          },
+          // setting applinking start
+          {
+            "entities": [
+              "entity.system.browsable"
+            ],
+            "actions": [
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                "scheme": "https",
+                "host": "openinstall为应用生成的关联域名"
+              }
+            ],
+            "domainVerify": true
+          }
+          // setting applinking end
+        ]
+      }
+      //...
+    ]
+  }
+}
+```
+
+#### 配置 byteCodeHar 支持
+由于 openinstall 的鸿蒙原生SDK包是字节码格式的，因此需要配置项目支持字节码格式的har  
+修改项目目录的 `build-profile.json5`文件，在`products`中添加`useNormalizedOHMUrl`配置 
+``` json
+"products": [
+  {
+    "name": "default",
+    "signingConfig": "default",
+    "compatibleSdkVersion": "5.0.0(12)",
+    "runtimeOS": "HarmonyOS",
+    "buildOption": {
+      "strictMode": {
+        "useNormalizedOHMUrl": true
+      }
+    }
+  }
+]
+
+```
 
 ## 三、使用
 
@@ -246,24 +401,6 @@ _openinstallFlutterPlugin.reportShare("123456", "WechatSession")
 | oaid | string | 通过移动安全联盟获取到的 oaid，SDK 将不再获取oaid |
 | imei | string | imei 原值 |
 | mac | string | mac address 原值 |
-
-
-2、针对广告平台，为了精准地匹配到渠道，需要获取设备唯一标识码（IMEI），因此需要在 AndroidManifest.xml 中添加权限声明 
- 
-```
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-```
-
-3、在权限申请成功后，再进行openinstall初始化。**无论终端用户是否同意，都要调用初始化**  
-代码示例如下：  
-``` dart
-// 使用 permission_handler
-if (await Permission.phone.request().isGranted) {
-  // 获取到了权限
-}
-_openinstallFlutterPlugin.init(wakeupHandler);
-```
-**注意：** `_openinstallFlutterPlugin.init(wakeupHandler, permission);` 接口已废弃，请自行处理权限请求
 
 
 ### iOS平台
