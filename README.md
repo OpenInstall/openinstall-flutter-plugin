@@ -12,7 +12,7 @@ openinstall插件封装了openinstall平台原生SDK，集成了 **渠道统计,
 
 ``` json 
 dependencies:
-  openinstall_flutter_plugin: ^2.1.2
+  openinstall_flutter_plugin: ^2.5.2
 ```
 
 ### 2. 安装插件

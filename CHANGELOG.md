@@ -1,3 +1,6 @@
+## 2.5.3
+Android 更新 SDK 到 2.8.5
+
 ## 2.5.2
 iOS 补充getOpid获取
 
