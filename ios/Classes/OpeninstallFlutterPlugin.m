@@ -131,11 +131,13 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                     NSDictionary * resultDic = @{@"shouldRetry":@(shouldRetry),@"message":msg};
                     result(resultDic);
                 }];
+                break;
             }
             case OpenInstallSDKMethodGetOpid:
             {
                 NSString *opid = [[OpenInstallSDK defaultManager] getOpId];
                 result(opid);
+                break;
             }
             default:
             {
