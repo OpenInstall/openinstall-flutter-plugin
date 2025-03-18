@@ -125,14 +125,6 @@ class OpeninstallFlutterPlugin {
     return data;
   }
 
-  Future<Map<String, dynamic>> reportShare(String shareCode, String platform) async {
-    var args = new Map();
-    args["shareCode"] = shareCode;
-    args["platform"] = platform;
-    Map<String, dynamic> data = await _channel.invokeMethod('reportShare', args);
-    return data;
-  }
-
   Future<String?> getOpid() async {
     print("getOpid 当初始化未完成时，将返回空，请在业务需要时再获取，并且使用时做空判断");
     if (Platform.isAndroid) {
