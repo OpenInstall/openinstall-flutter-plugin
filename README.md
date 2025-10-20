@@ -1,4 +1,4 @@
-# openinstall flutter plugin
+# openinstall flutter plugin 
 
 
 openinstall插件封装了openinstall平台原生SDK，集成了 **渠道统计,携带参数安装,快速安装与一键拉起** 功能，目前渠道支持 **H5渠道**，**广告平台渠道** 以及 **Apple Search Ads (ASA) 渠道**。  
