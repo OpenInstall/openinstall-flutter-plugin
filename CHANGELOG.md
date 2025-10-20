@@ -1,3 +1,6 @@
+## 2.5.5
+Android 更新 SDK 到 2.9.1
+
 ## 2.5.4
 iOS reportShare bug修复
 
