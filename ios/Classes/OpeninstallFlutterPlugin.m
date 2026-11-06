@@ -3,6 +3,7 @@
 #import "OpeninstallFlutterPlugin.h"
 
 #import "OpenInstallSDK.h"
+#import "CPOIThirdPartyIntegration.h"
 #import <AdSupport/AdSupport.h>
 #import <AppTrackingTransparency/AppTrackingTransparency.h>//苹果新隐私政策
 #import <AdServices/AAAttribution.h>//ASA
@@ -14,7 +15,9 @@ typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
     OpenInstallSDKMethodReportEffectPoint,
     OpenInstallSDKMethodConfig,
     OpenInstallSDKMethodReportShare,
-    OpenInstallSDKMethodGetOpid
+    OpenInstallSDKMethodGetOpid,
+    OpenInstallSDKMethodSetDebug,
+    OpenInstallSDKMethodSetLogListener
 };
 
 @interface OpeninstallFlutterPlugin () <OpenInstallDelegate>
@@ -27,6 +30,11 @@ typedef NS_ENUM(NSUInteger, OpenInstallSDKPluginMethod) {
 @property (assign, nonatomic) BOOL ASAEnable;//必要，是否开启苹果ASA功能
 @property (assign, nonatomic) BOOL ASADebug;//可选，ASA测试debug模式，注意：正式环境中请务必关闭
 @property (copy, nonatomic) NSString *idfaStr;//可选，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
+@property (copy, nonatomic) NSString *caid1;//可选，宿主自行获取的CAID参数
+@property (copy, nonatomic) NSString *caid2;//可选，宿主自行获取的CAID参数
+@property (strong, nonatomic) NSNumber *clipboardEnabled;//可选，是否允许SDK读取剪贴板，不设置时保持默认行为
+@property (strong, nonatomic) NSNumber *idfvEnabled;//可选，是否允许SDK读取identifierForVendor，不设置时保持默认行为
+@property (strong, nonatomic) NSNumber *localIPEnabled;//可选，是否允许SDK枚举本地网络IP地址，不设置时保持默认行为
 
 @end
 
@@ -57,7 +65,9 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                     @"reportEffectPoint"      :      @(OpenInstallSDKMethodReportEffectPoint),
                     @"config"                 :      @(OpenInstallSDKMethodConfig),
                     @"reportShare"            :      @(OpenInstallSDKMethodReportShare),
-                    @"getOpid"                :      @(OpenInstallSDKMethodGetOpid)
+                    @"getOpid"                :      @(OpenInstallSDKMethodGetOpid),
+                    @"setDebug"               :      @(OpenInstallSDKMethodSetDebug),
+                    @"setLogListener"         :      @(OpenInstallSDKMethodSetLogListener)
                     };
 }
 
@@ -117,6 +127,16 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
                 self.ASAEnable = [args[@"ASAEnable"] boolValue];
                 self.idfaStr = args[@"idfaStr"];
                 self.ASADebug = [args[@"ASADebug"] boolValue];
+                // 隐私开关，仅在宿主显式传入时生效，未传入时保持SDK默认行为
+                if ([args.allKeys containsObject:@"clipboardEnabled"]) {
+                    self.clipboardEnabled = args[@"clipboardEnabled"];
+                }
+                if ([args.allKeys containsObject:@"idfvEnabled"]) {
+                    self.idfvEnabled = args[@"idfvEnabled"];
+                }
+                if ([args.allKeys containsObject:@"localIPEnabled"]) {
+                    self.localIPEnabled = args[@"localIPEnabled"];
+                }
                 
                 break;
             }
@@ -137,6 +157,22 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
             {
                 NSString *opid = [[OpenInstallSDK defaultManager] getOpId];
                 result(opid);
+                break;
+            }
+            case OpenInstallSDKMethodSetDebug:
+            {
+                BOOL enabled = [call.arguments[@"enabled"] boolValue];
+                [OpenInstallSDK setDebug:enabled];
+                break;
+            }
+            case OpenInstallSDKMethodSetLogListener:
+            {
+                __weak typeof(self) weakSelf = self;
+                [CPOIThirdPartyIntegration setThirdPartyLogHandler:^(NSDictionary<NSString *,NSString *> * _Nonnull event) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakSelf.flutterMethodChannel invokeMethod:@"onLogNotification" arguments:event];
+                    });
+                }];
                 break;
             }
             default:
@@ -234,39 +270,55 @@ static FlutterMethodChannel * FLUTTER_METHOD_CHANNEL;
 }
 
 - (void)OpInit{
+    //无额外配置时使用默认初始化方法，保持历史行为
+    if (!self.ASAEnable && !self.adEnable
+        && self.clipboardEnabled == nil && self.idfvEnabled == nil && self.localIPEnabled == nil
+        && self.caid1.length == 0 && self.caid2.length == 0) {
+        [OpenInstallSDK initWithDelegate:self];
+        return;
+    }
+    
+    //3.1.0 推荐初始化方式，传入隐私及归因配置
+    OpenInstallConfiguration *configuration = [OpenInstallConfiguration defaultConfiguration];
+    //隐私开关，仅在宿主显式传入时覆盖默认值
+    if (self.clipboardEnabled != nil) {
+        configuration.clipboardEnabled = self.clipboardEnabled.boolValue;
+    }
+    if (self.idfvEnabled != nil) {
+        configuration.idfvEnabled = self.idfvEnabled.boolValue;
+    }
+    if (self.localIPEnabled != nil) {
+        configuration.localIPEnabled = self.localIPEnabled.boolValue;
+    }
     //ASA广告归因
-    NSMutableDictionary *config = [[NSMutableDictionary alloc]init];
     if (@available(iOS 14.3, *)) {
-        NSError *error;
-        NSString *token = [AAAttribution attributionTokenWithError:&error];
         if (self.ASAEnable) {
-            [config setValue:token forKey:OP_ASA_Token];
+            NSError *error;
+            configuration.asaToken = [AAAttribution attributionTokenWithError:&error];
         }
         if (self.ASADebug) {
-            [config setValue:@(YES) forKey:OP_ASA_isDev];
+            configuration.asaDeveloperMode = YES;
         }
     }
     //第三方广告平台统计代码
-    NSString *idfaStr;
     if (self.adEnable) {
+        NSString *idfaStr;
         if (self.idfaStr.length > 0) {
             idfaStr = self.idfaStr;
         }else{
             idfaStr = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
         }
-        [config setValue:idfaStr forKey:OP_Idfa_Id];
+        configuration.idfa = idfaStr;
+    }
+    //宿主传入的CAID参数
+    if (self.caid1.length > 0) {
+        configuration.caid1 = self.caid1;
+    }
+    if (self.caid2.length > 0) {
+        configuration.caid2 = self.caid2;
     }
     
-    if (!self.ASAEnable && !self.adEnable) {
-        [OpenInstallSDK initWithDelegate:self];
-    }else if (!self.ASAEnable && self.adEnable){
-        [OpenInstallSDK initWithDelegate:self advertisingId:idfaStr];
-    }else if (self.ASAEnable && !self.adEnable){
-        [OpenInstallSDK initWithDelegate:self adsAttribution:config];
-    }else if (self.ASAEnable && self.adEnable){
-        [OpenInstallSDK initWithDelegate:self adsAttribution:config];
-    }
-    
+    [OpenInstallSDK initWithDelegate:self configuration:configuration];
 }
 
 

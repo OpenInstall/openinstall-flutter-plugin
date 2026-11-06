@@ -5,9 +5,13 @@ import 'package:flutter/services.dart';
 
 typedef Future EventHandler(Map<String, Object> data);
 
+// 日志回调，data 中包含 level 和 message 两个字段
+typedef Future LogHandler(Map<String, Object> data);
+
 class OpeninstallFlutterPlugin {
   // 单例
-  static final OpeninstallFlutterPlugin _instance = new OpeninstallFlutterPlugin._internal();
+  static final OpeninstallFlutterPlugin _instance =
+      new OpeninstallFlutterPlugin._internal();
 
   factory OpeninstallFlutterPlugin() => _instance;
 
@@ -17,17 +21,25 @@ class OpeninstallFlutterPlugin {
 
   late EventHandler _wakeupHandler;
   late EventHandler _installHandler;
+  LogHandler? _logHandler;
 
-  static const MethodChannel _channel = const MethodChannel('openinstall_flutter_plugin');
+  static const MethodChannel _channel =
+      const MethodChannel('openinstall_flutter_plugin');
 
+  // 设置 SDK 调试日志开关，建议在 init 之前调用，正式发布版本请保持关闭（false）。
   void setDebug(bool enabled) {
-    if (Platform.isAndroid) {
-      var args = new Map();
-      args["enabled"] = enabled;
-      _channel.invokeMethod('setDebug', args);
-    } else {
-      // 仅使用于 Android 平台
-    }
+    var args = new Map();
+    args["enabled"] = enabled;
+    _channel.invokeMethod('setDebug', args);
+  }
+
+  // 设置原生 SDK 日志监听，用于将 SDK 内部日志回传到自己的日志系统
+  // 回调 data 中包含 level 和 message 两个字段
+  // 建议在 init 之前调用；重复设置会替换之前的回调
+  void setLogListener(LogHandler logHandler) {
+    _logHandler = logHandler;
+    _channel.setMethodCallHandler(_handleMethod);
+    _channel.invokeMethod('setLogListener');
   }
 
   // 广告平台配置，请参考文档
@@ -56,6 +68,9 @@ class OpeninstallFlutterPlugin {
   //ASAEnable：必要，是否开启ASA功能
   //ASADebug：可选，使用ASA功能时是否开启debug模式,正式环境中请关闭
   //idfaStr：可选，用户可以自行传入idfa字符串，不传则插件内部会获取，通过其它插件获取的idfa字符串一般格式为xxxx-xxxx-xxxx-xxxx
+  //clipboardEnabled：可选，是否允许 SDK 读取剪贴板进行渠道匹配，默认开启
+  //idfvEnabled：可选，是否允许 SDK 读取 identifierForVendor，默认开启
+  //localIPEnabled：可选，是否允许 SDK 枚举本地网络 IP 地址，默认开启
   void configIos(Map options) {
     if (Platform.isAndroid) {
       //仅使用于 iOS 平台
@@ -76,7 +91,8 @@ class OpeninstallFlutterPlugin {
       args["alwaysCallback"] = alwaysCallback;
       _channel.invokeMethod("init", args);
     } else {
-      print("插件版本>=2.3.1后，由于整合了广告和ASA系统，iOS平台将通过用户手动调用init方法初始化SDK，需要广告平台或者ASA统计服务的请在init方法前调用configIos方法配置参数");
+      print(
+          "插件版本>=2.3.1后，由于整合了广告和ASA系统，iOS平台将通过用户手动调用init方法初始化SDK，需要广告平台或者ASA统计服务的请在init方法前调用configIos方法配置参数");
     }
   }
 
@@ -107,7 +123,8 @@ class OpeninstallFlutterPlugin {
     _channel.invokeMethod('reportRegister');
   }
 
-  void reportEffectPoint(String pointId, int pointValue, [Map<String, String>? extraMap]) {
+  void reportEffectPoint(String pointId, int pointValue,
+      [Map<String, String>? extraMap]) {
     var args = new Map();
     args["pointId"] = pointId;
     args["pointValue"] = pointValue;
@@ -117,11 +134,13 @@ class OpeninstallFlutterPlugin {
     _channel.invokeMethod('reportEffectPoint', args);
   }
 
-  Future<Map<Object?, Object?>> reportShare(String shareCode, String platform) async {
+  Future<Map<Object?, Object?>> reportShare(
+      String shareCode, String platform) async {
     var args = new Map();
     args["shareCode"] = shareCode;
     args["platform"] = platform;
-    Map<Object?, Object?> data = await _channel.invokeMethod('reportShare', args);
+    Map<Object?, Object?> data =
+        await _channel.invokeMethod('reportShare', args);
     return data;
   }
 
@@ -153,6 +172,8 @@ class OpeninstallFlutterPlugin {
         return _wakeupHandler(call.arguments.cast<String, Object>());
       case "onInstallNotification":
         return _installHandler(call.arguments.cast<String, Object>());
+      case "onLogNotification":
+        return _logHandler?.call(call.arguments.cast<String, Object>());
       default:
         throw new UnsupportedError("Unrecognized Event");
     }

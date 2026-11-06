@@ -1,0 +1,275 @@
+//
+//  OpenInstallSDK.h
+//  OpenInstallSDK
+//
+//  Created by toby on 16/8/11.
+//  Copyright © 2016年 toby. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "OpeninstallData.h"
+#import "OpenInstallConfiguration.h"
+
+@protocol OpenInstallDelegate<NSObject>
+
+@optional
+
+#pragma mark - 推荐使用最新API：<code>getInstallParmsCompleted</code>
+/**
+ * 安装时获取h5页面动态参数（如果是渠道链接，渠道编号会一起返回）
+ * @param params 动态参数
+ * @param error 错误回调
+ * @discussion 老版本sdk升级过来可延用该api
+ */
+- (void)getInstallParamsFromOpenInstall:(nullable NSDictionary *)params withError:(nullable NSError *)error __deprecated_msg("Deprecated func，请使用方法<code>getInstallParmsCompleted</code>");
+
+
+///----------------------
+/// @name 一键拉起的回调方法
+///----------------------
+
+#pragma mark - 推荐使用最新API：<code>getWakeUpParams</code>
+/**
+ * 唤醒时获取h5页面动态参数（如果是渠道链接，渠道编号会一起返回）
+ * @param params 动态参数
+ * @param error 错误回调
+ * @discussion 老版本sdk升级过来可延用该api
+ */
+- (void)getWakeUpParamsFromOpenInstall:(nullable NSDictionary *)params withError:(nullable NSError *)error __deprecated_msg("Deprecated func，请使用方法<code>getWakeUpParams</code>");
+
+
+#pragma mark - add in v2.2.0
+/**
+ * 唤醒时获取h5页面动态参数（如果是渠道链接，渠道编号会一起返回）
+ * @param appData 动态参数对象
+ */
+- (void)getWakeUpParams:(nullable OpeninstallData *)appData;
+
+@end
+
+@interface OpenInstallSDK : NSObject
+
+/**
+ * 获取sdk当前版本号,add in v2.2.1
+ */
++ (NSString *_Nullable)sdkVersion;
+
+#pragma mark - add in v3.1.0
+
+/**
+ * 设置 SDK 调试日志开关
+ *
+ * @param enabled YES 开启调试日志，NO 关闭调试日志
+ * @discussion
+ * 1. 控制 SDK 内部 Debug / Info / Warning 级别日志的输出；Error 级别日志不受此开关影响，始终输出
+ * 2. 默认行为：Debug 编译包默认开启，Release 编译包默认关闭
+ * 3. 建议在调用初始化方法（如 initWithDelegate:）之前设置，便于排查集成与归因问题
+ * 4. 正式发布版本请保持关闭（NO），避免在控制台输出过多调试信息
+ */
++(void)setDebug:(BOOL)enabled;
+
+
+/**
+ * SDK单例,returns a previously instantiated singleton instance of the API.
+ */
++(instancetype _Nullable)defaultManager;
+
+
+///-------------
+/// @name 初始化
+///-------------
+
+#pragma mark - added in v2.2.0 请在Info.plist中配置应用的appkey
+
+/**
+ * 初始化OpenInstall SDK
+ * ***调用该方法前，需在Info.plist文件中配置键值对,键为com.openinstall.APP_KEY不能修改，值为相应的应用的appKey，可在openinstall官方后台查看***
+ 
+ <key>com.openinstall.APP_KEY</key>
+ <string>你的appKey</string>
+ 
+ * @param delegate 委托方法所在的类的对象
+ */
++(void)initWithDelegate:(id<OpenInstallDelegate> _Nonnull)delegate;
+
+/**
+ * 初始化 OpenInstall SDK，并传入隐私及归因配置。
+ *
+ * 3.1.0 新增，推荐使用；需要传入隐私与归因配置时优先使用该接口，
+ * 无需额外配置时使用 initWithDelegate:。其余初始化接口仅为兼容旧版保留。
+ *
+ * @param delegate 委托方法所在的类的对象
+ * @param configuration 隐私开关及宿主主动传入的 IDFA、ASA、CAID 参数；传入 nil 时使用默认配置
+ * @discussion 配置应在初始化时传入。隐私开关默认开启，以保持历史行为。
+ */
++ (void)initWithDelegate:(nullable id<OpenInstallDelegate>)delegate
+           configuration:(nullable OpenInstallConfiguration *)configuration;
+
+
+#pragma mark - added in v2.4.0
+/**
+ * 初始化sdk并传入广告标识符id（可选）
+ * ***调用该方法前，需在Info.plist文件中配置键值对,键为com.openinstall.APP_KEY不能修改，值为相应的应用的appKey，可在openinstall官方后台查看***
+ *
+ * @param adid 广告标识符，需用户自己获取并传入，默认为空，传入nil则与初始化方法 initwithDelegate: 一致
+ * @param delegate 委托方法所在的类的对象
+ * @discussion 1、只有需要使用“广告平台渠道”进行广告效果监测的用户才需调用，2、需开启后台开关，位置："iOS集成"->"iOS应用配置"->"广告平台对接"
+ * ***详细文档请查看：https://www.openinstall.com/doc/adPlatform.html***
+ */
++ (void)initWithDelegate:(nullable id<OpenInstallDelegate>)delegate advertisingId:(NSString *_Nullable)adid __deprecated_msg("3.1.0 起推荐使用 initWithDelegate:configuration:，请通过 OpenInstallConfiguration.idfa 传入 IDFA");
+
+
+#pragma mark - added in v2.5.4
+
+/**
+ * 初始化sdk，并传入广告相关参数
+ * 详细参考官网文档
+ *
+ * @param delegate 委托方法所在的类的对象
+ * @param attribution 广告相关参数，如ASA token，idfa等，@{OP_ASA_Token:@"your ASA Token"}
+ * 参考文档 https://www.openinstall.com/doc/asa.html
+ */
++ (void)initWithDelegate:(nullable id<OpenInstallDelegate>)delegate
+          adsAttribution:(NSDictionary *_Nullable)attribution __deprecated_msg("3.1.0 起推荐使用 initWithDelegate:configuration:，请通过 OpenInstallConfiguration 传入 ASA、IDFA 等归因参数");
+
+
+#pragma mark - Deprecated in v2.2.0（已废弃）
+
+/**
+ * 初始化OpenInstall SDK (已废弃,请参考方法 initwithDelegate: 已使用该初始化方法的用户也可继续使用)
+ *
+ * @param appKey 控制中心创建应用获取appKey
+ * @param delegate 委托方法(getWakeUpParams)所在的类的对象
+ * @discussion 老版本sdk升级过来可延用该api
+ */
++(void)setAppKey:(nonnull NSString *)appKey withDelegate:(nullable id<OpenInstallDelegate>)delegate __deprecated_msg("Deprecated in v2.2.0，请使用 initWithDelegate:（3.1.0 起推荐）");
+
+
+///----------------------
+/// @name 获取安装的动态参数
+///----------------------
+
+#pragma mark - added in v2.2.0
+
+/**
+ * 开发者在需要获取用户安装app后由web网页传递过来的”动态参数“（如邀请码、游戏房间号，渠道编号，ASA渠道编号等）时调用该方法,可第一时间返回数据，可在任意位置调用
+ *
+ * @param completedBlock 回调block，在主线程（UI线程）回调
+ *
+ * @discussion
+ 1、不要自己保存动态安装参数，在每次需要用到参数时，请调用该方法去获取；
+ 2、该方法默认超时长一般为8~15秒不同版本会有浮动，使用了ASA则会在30秒左右，尽量写在业务场景需要参数的位置调用（在业务场景时，网络一般都是畅通的），例如，可以选择在用户注册成功后调用该方法获取参数，对用户进行奖励。原因是iOS首次安装、首次启动的app，会询问用户获取网络权限，用户允许后SDK才能正常联网去获取参数。如果调用过早，可能导致网络权限还未允许就被调用，导致参数无法及时拿到，误以为参数不存在（此时getInstallParmsCompleted法已超时，回调返回空）；
+ 3. 如果是业务需要，必须在application:didFinishLaunchingWithOptions方法中获取参数，可调用下面高级API，修改超时时长，比如30秒或更长。
+ 
+ * ***该方法可重复获取参数，如需在首次安装才获取安装参数，请自行判断，参考https://www.openinstall.com/doc/ios_sdk_faq.html***
+ */
+-(void)getInstallParmsCompleted:(void (^_Nullable)(OpeninstallData*_Nullable appData))completedBlock;
+
+
+/**
+ * 开发者在需要获取用户安装app后由web网页传递过来的”动态参数“（如邀请码、游戏房间号，渠道编号，ASA渠道编号等）时调用该方法,可第一时间返回数据，可在任意位置调用
+ *
+ * @param timeoutInterval 可设置回调超时时长，单位秒(s)
+ * @param completedBlock 回调block，在主线程（UI线程）回调
+ *
+ * @discussion
+ * ***开发者不要自行保存参数!!!如果获取动态参数成功，SDK会把参数保存在本地***
+ * ***该方法可重复获取参数，如需在首次安装才获取安装参数，请自行判断，参考https://www.openinstall.com/doc/ios_sdk_faq.html***
+ */
+-(void)getInstallParmsWithTimeoutInterval:(NSTimeInterval)timeoutInterval
+                                completed:(void (^_Nullable)(OpeninstallData*_Nullable appData))completedBlock;
+
+
+
+#pragma mark - Deprecated in v2.1.1（已废弃）
+/**
+ * 开发者直接获取动态参数,初始化之后调用（参数的正常获取时间1-2秒内）
+ * @return NSDictionary
+ */
++(NSDictionary *_Nullable)getOpenInstallParams __deprecated_msg("Deprecated in v2.1.1，请参考方法<code>getInstallParmsCompleted</code>");
+
+
+///---------------------
+/// @name 一键拉起回调处理
+///---------------------
+
+/**
+ * 处理 URI schemes
+ * @param URL 系统回调传回的URL
+ * @return bool URL是否被OpenInstall识别
+ */
++(BOOL)handLinkURL:(NSURL *_Nullable)URL;
+
+
+/**
+ * 处理 通用链接
+ * @param userActivity 存储了页面信息，包括url
+ * @return bool URL是否被OpenInstall识别
+ */
++(BOOL)continueUserActivity:(NSUserActivity *_Nullable)userActivity;
+
+
+
+///--------------
+/// @name 统计相关
+///--------------
+
+
+/**
+ * 注册量统计
+ *
+ * 使用openinstall 控制中心提供的渠道统计时，在App用户注册完成后调用，可以统计渠道注册量。
+ * 必须在注册成功的时再调用该方法，避免重复调用，否则可能导致注册统计不准
+ */
++(void)reportRegister;
+
+
+#pragma mark - added in v2.2.0
+/**
+ * 渠道效果统计
+ *
+ * 目前SDK采用定时上报策略，时间间隔由服务器控制
+ * e.g.可统计用户支付消费情况，点击次数等
+ *
+ * @param effectID 效果点ID
+ * @param effectValue 效果点值（如果是人民币金额，请以分为计量单位）
+ */
+-(void)reportEffectPoint:(NSString *_Nonnull)effectID effectValue:(long)effectValue;
+
+
+#pragma mark - added in v2.6.0
+/**
+ * 渠道效果统计，效果明细上报
+ *
+ * 目前SDK采用定时上报策略，时间间隔由服务器控制
+ * e.g.可统计用户支付消费情况，点击次数，以及效果明细等
+ *
+ * @param effectID 效果点ID
+ * @param effectValue 效果点值（如果是人民币金额，请以分为计量单位）
+ * @param effectDictionary 效果点明细，key和value都要传入字符串格式
+ */
+-(void)reportEffectPoint:(NSString *_Nonnull)effectID effectValue:(long)effectValue effectDictionary:(NSDictionary*_Nonnull)effectDictionary;
+
+
+#pragma mark - added in v2.7.0
+/**
+ * 分享上报
+ *
+ * @param shareCode 分享用户ID；String 必填
+ * @param sharePlatform 分享平台：String 建议填入 根据已创建好的“OP_SharePlatform”字符串类型填入
+ * @param completedBlock 上报成功code=0，飞行模式/网络差/连接异常code=-1可重试，其它情况代表发生异常错误不需要重试，返回主线程
+ */
+-(void)reportShareParametersWithShareCode:(NSString *_Nonnull)shareCode
+                           sharePlatform:(OP_SharePlatform _Nullable)sharePlatform
+                               completed:(void (^_Nullable)(NSInteger code,NSString *_Nullable msg))completedBlock;
+
+
+#pragma mark - added in v2.8.0
+/**
+ *  获取opid
+ *  初始化后调用，非异步，须真机
+ *  也可以在`getInstallParmsCompleted`方法回调里调用，等待初始化完成后返回opid
+ */
+- (NSString *_Nullable)getOpId;
+
+@end

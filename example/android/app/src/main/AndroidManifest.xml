@@ -10,7 +10,6 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:icon="@mipmap/ic_launcher"
-        android:name=".MainApplication"
         android:label="openinstall_flutter_plugin_example">
         <activity
             android:name=".MainActivity"

@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -27,13 +29,17 @@
 			<string>openinstall</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>wy7kso</string>
+				<string>openinstall_schemes</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>为了您可以精准获取到优质推荐内容，需要您允许使用该权限</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -55,8 +61,6 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>com.openinstall.APP_KEY</key>
-	<string>appkey</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>为了您可以精准获取到优质推荐内容，需要您允许使用该权限</string>
+	<string>openinstall_appkey</string>
 </dict>
 </plist>

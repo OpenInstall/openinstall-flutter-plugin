@@ -3,6 +3,8 @@ package io.openinstall.openinstall_flutter_plugin;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -16,6 +18,7 @@ import com.fm.openinstall.listener.AppInstallRetryAdapter;
 import com.fm.openinstall.listener.AppWakeUpAdapter;
 import com.fm.openinstall.listener.AppWakeUpListener;
 import com.fm.openinstall.listener.ResultCallback;
+import com.fm.openinstall.listener.UserLogListener;
 import com.fm.openinstall.model.AppData;
 import com.fm.openinstall.model.Error;
 
@@ -34,7 +37,8 @@ import io.flutter.plugin.common.PluginRegistry;
 /**
  * OpeninstallFlutterPlugin
  */
-public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.NewIntentListener {
+public class OpeninstallFlutterPlugin
+        implements FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.NewIntentListener {
 
     private static final String TAG = "OpenInstallPlugin";
     @Deprecated
@@ -51,9 +55,11 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private static final String METHOD_SHARE = "reportShare";
     private static final String METHOD_OPID = "getOpid";
     private static final String METHOD_CHANNEL = "setChannel";
+    private static final String METHOD_LOG_LISTENER = "setLogListener";
 
     private static final String METHOD_WAKEUP_NOTIFICATION = "onWakeupNotification";
     private static final String METHOD_INSTALL_NOTIFICATION = "onInstallNotification";
+    private static final String METHOD_LOG_NOTIFICATION = "onLogNotification";
 
     private MethodChannel channel = null;
     private ActivityPluginBinding activityPluginBinding;
@@ -65,6 +71,8 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
     private boolean alwaysCallback = false;
     private boolean debuggable = true;
 
+    // 日志回调可能发生在任意线程，回传 Flutter 需切换到主线程
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
@@ -133,7 +141,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
                 public void onInstall(AppData appData, boolean shouldRetry) {
                     Map<String, Object> data = data2Map(appData);
                     data.put("retry", String.valueOf(shouldRetry)); // 2.4.0 之前的版本返回
-                    data.put("shouldRetry", shouldRetry);  // 以后保存统一
+                    data.put("shouldRetry", shouldRetry); // 以后保存统一
                     channel.invokeMethod(METHOD_INSTALL_NOTIFICATION, data);
                 }
             }, seconds == null ? 0 : seconds);
@@ -146,7 +154,7 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
             Integer pointValue = call.argument("pointValue");
             if (TextUtils.isEmpty(pointId) || pointValue == null) {
                 Log.w(TAG, "pointId is empty or pointValue is null");
-//                result.error("ERROR", "pointId is empty or pointValue is null", null);
+                // result.error("ERROR", "pointId is empty or pointValue is null", null);
             } else {
                 Map<String, String> extraMap = call.argument("extras");
                 OpenInstall.reportEffectPoint(pointId, pointValue, extraMap);
@@ -179,6 +187,24 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         } else if (METHOD_CHANNEL.equalsIgnoreCase(call.method)) {
             String channelCode = call.argument("channelCode");
             OpenInstall.setChannel(channelCode);
+            result.success("OK");
+        } else if (METHOD_LOG_LISTENER.equalsIgnoreCase(call.method)) {
+            OpenInstall.setUserLogListener(new UserLogListener() {
+                @Override
+                public void onLog(final String level, final String message) {
+                    final Map<String, Object> data = new HashMap<>();
+                    data.put("level", level);
+                    data.put("message", message);
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (channel != null) {
+                                channel.invokeMethod(METHOD_LOG_NOTIFICATION, data);
+                            }
+                        }
+                    });
+                }
+            });
             result.success("OK");
         } else {
             result.notImplemented();
@@ -231,22 +257,31 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         }
 
         configuration = builder.build();
-//        debugLog(String.format("Configuration: adEnabled=%s, oaid=%s, gaid=%s, macDisabled=%s, imeiDisabled=%s, "
-//                        + "androidId=%s, serialNumber=%s, imei=%s, mac=%s",
-//                configuration.isAdEnabled(), configuration.getOaid(), configuration.getGaid(),
-//                configuration.isMacDisabled(), configuration.isImeiDisabled(),
-//                configuration.getAndroidId(), configuration.getSerialNumber(),
-//                configuration.getImei(), configuration.getMacAddress()));
+        // debugLog(String.format("Configuration: adEnabled=%s, oaid=%s, gaid=%s,
+        // macDisabled=%s, imeiDisabled=%s, "
+        // + "androidId=%s, serialNumber=%s, imei=%s, mac=%s",
+        // configuration.isAdEnabled(), configuration.getOaid(),
+        // configuration.getGaid(),
+        // configuration.isMacDisabled(), configuration.isImeiDisabled(),
+        // configuration.getAndroidId(), configuration.getSerialNumber(),
+        // configuration.getImei(), configuration.getMacAddress()));
 
     }
 
     private boolean checkBoolean(Boolean bool) {
-        if (bool == null) return false;
+        if (bool == null)
+            return false;
         return bool;
     }
 
     private void init() {
         Context context = flutterPluginBinding.getApplicationContext();
+        if (activityPluginBinding != null) {
+            Activity activity = activityPluginBinding.getActivity();
+            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
+                context = activity;
+            }
+        }
         OpenInstall.init(context, configuration);
         initialized = true;
         if (intentHolder != null) {
@@ -261,7 +296,6 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
         wakeup(intent);
         return false;
     }
-
 
     private void wakeup(Intent intent) {
         if (initialized) {
@@ -311,11 +345,11 @@ public class OpeninstallFlutterPlugin implements FlutterPlugin, MethodCallHandle
 
     @Override
     public void onDetachedFromActivityForConfigChanges() {
-
+        activityPluginBinding = null;
     }
 
     @Override
     public void onDetachedFromActivity() {
-
+        activityPluginBinding = null;
     }
 }

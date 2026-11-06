@@ -32,7 +32,7 @@ import 'package:openinstall_flutter_plugin/openinstall_flutter_plugin.dart';
 ```
 
 ## 二、配置
-前往 [openinstall控制台](https://developer.openinstall.io/) 创建应用并获取 openinstall 为应用分配的` appkey` 和 `scheme` 以及 iOS的关联域名（Associated Domains）  
+前往 [openinstall控制台](https://developer.openinstall.com/) 创建应用并获取 openinstall 为应用分配的` appkey` 和 `scheme` 以及 iOS的关联域名（Associated Domains）  
 ![appkey和scheme](https://res.cdn.openinstall.io/doc/ios-appkey.png)
 
 ### Android 平台配置
@@ -99,7 +99,7 @@ android: {
     <key>com.apple.developer.associated-domains</key><!--固定key值-->
     <array>
         <!--这里换成你在openinstall后台的关联域名(Associated Domains)-->
-        <string>applinks:xxxxxx.openinstall.io</string>
+        <string>applinks:xxxxxx.oplinking.com</string>
     </array>
 </dict>
 </plist>
@@ -210,6 +210,33 @@ _openinstallFlutterPlugin.reportShare("123456", "WechatSession")
 ```
 可以通过返回的data中的`shouldRetry`决定是否需要重试，以及`message`查看失败的原因
 
+#### 调试日志开关
+`setDebug(bool enabled)`
+
+设置 SDK 调试日志开关，建议在 `init` 之前调用，正式发布版本请保持关闭（false）。
+
+示例：
+``` dart
+_openinstallFlutterPlugin.setDebug(true);
+```
+
+#### 日志监听
+`setLogListener(LogHandler logHandler)`
+
+设置原生 SDK 日志监听，用于将 SDK 内部日志回传打印到自己的日志系统，建议在 `init` 之前调用。回调 `data` 中包含 `level`（error/warning/info/debug）和 `message` 两个字段。重复设置会替换之前的回调。
+
+示例：
+``` dart
+Future logHandler(Map<String, Object> data) async {
+    print("openinstall log : " +
+        data['level'].toString() +
+        " " +
+        data['message'].toString());
+}
+
+_openinstallFlutterPlugin.setLogListener(logHandler);
+```
+
 ## 四、导出apk/ipa包并上传
 
 集成完毕后，导出iOS/Android安装包上传[openinstall控制台](https://developer.openinstall.io/)，openinstal会检查应用的集成配置  
@@ -288,9 +315,13 @@ _openinstallFlutterPlugin.init(wakeupHandler);
 | idfaStr | string | 可选，默认为空，用户传入的idfa字符串，用于广告平台统计功能 | adEnable为true时才生效，不配置则由插件内部去获取隐私权限和idfa字符串 |
 | ASAEnable | bool | 必要，默认为false，是否开启苹果ASA功能 | 无 |
 | ASADebug | bool | 可选，默认为false，使用ASA功能时是否开启debug模式 | ASAEnable为true时才生效，正式环境中请务必关闭(不配置或配置为false) |
+| clipboardEnabled | bool | 可选，是否允许 SDK 读取剪贴板进行渠道匹配，默认开启 | 仅在显式传入时生效 |
+| idfvEnabled | bool | 可选，是否允许 SDK 读取 identifierForVendor，默认开启 | 仅在显式传入时生效 |
+| localIPEnabled | bool | 可选，是否允许 SDK 枚举本地网络 IP 地址，默认开启 | 仅在显式传入时生效 |
 
 备注：adEnable为false时，插件内部不会去请求隐私权限和idfa字符串，idfaStr配置也会失效；  
 adEnable为true时，如果idfaStr有值且不为空，则使用idfaStr的值，如果未配置idfaStr或为空，则插件内部去获取隐私权限和idfa字符串；  
+caid、隐私开关（clipboardEnabled/idfvEnabled/localIPEnabled）等初始化配置参数需要原生 iOS SDK >=3.1.0；
 
 2、需要在 `ios/Runner/Info.plist` 文件中配置权限  
 ``` xml
